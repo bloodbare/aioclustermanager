@@ -241,7 +241,6 @@ class K8SCaller(object):
             cpu_limit=cpu_limit, mem_limit=mem_limit,
             envvars=envvars, workers=workers,
             ps=ps, masters=masters, tb_gs=tb_gs)
-        import pdb; pdb.set_trace()
         return await self.post(url, version, obj.payload())
 
     async def wait_for_job(self, namespace, name):

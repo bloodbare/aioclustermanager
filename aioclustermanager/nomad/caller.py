@@ -68,7 +68,6 @@ class NomadCaller(object):
         # We need to wait the job is added check alloc for Started
         not_found = True
         while not_found:
-            import pdb; pdb.set_trace()
             allocations = await self.get(
                 real_job_id, 'allocations')
             for alloc in allocations:

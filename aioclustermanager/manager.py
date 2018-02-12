@@ -40,6 +40,7 @@ class ClusterManager(object):
         exist = await self.caller.get_job(namespace, name)
         if exist is not None and delete:
             await self.delete_job(namespace, name, wait=True)
+            exist = None
 
         if exist is None:
             await self.caller.create_job(
@@ -77,7 +78,7 @@ class ClusterManager(object):
             result[job.id] = await self.caller.get_job_executions(namespace, job.id)
         return result
 
-    async def await_job_starts_or_error_or_done(self, namespace, name):
+    async def wait_for_job_execution_status(self, namespace, name):
         status = 'Pending'
         while status not in ['Running', 'Error', 'Succeeded']:
             await asyncio.sleep(10)
@@ -141,7 +142,6 @@ class ClusterManager(object):
             self, namespace, name, image,
             command=None, args=None,
             cpu_limit=None, mem_limit=None,
-            cpu_require=None, mem_require=None,
             envvars={}, workers=1, ps=1, masters=1, tb_gs=None,
             delete=False):
         exist = await self.caller.get_tfjob(namespace, name)

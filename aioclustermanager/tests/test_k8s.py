@@ -79,7 +79,7 @@ async def test_get_jobs_limit_k8s(kubernetes):
 
     # we want to wait that the first job starts
 
-    result = await kubernetes.await_job_starts_or_error_or_done(
+    result = await kubernetes.wait_for_job_execution_status(
         'aiocluster-test', 'test-job')
     assert result == 'Running'
 
@@ -125,7 +125,5 @@ async def test_get_tfjobs_k8s(kubernetes):
     assert result is True
 
     tf_job = await kubernetes.get_tfjob('aiocluster-test', 'test-tfjob')
-    import pdb; pdb.set_trace()
 
     tf_jobs = await kubernetes.list_tfjobs('aiocluster-test')
-    import pdb; pdb.set_trace()
