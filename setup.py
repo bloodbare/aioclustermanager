@@ -1,0 +1,36 @@
+from setuptools import setup
+from setuptools import find_packages
+import re
+
+
+def load_reqs(filename):
+    with open(filename) as reqs_file:
+        return [
+            re.sub('==', '>=', line) for line in reqs_file.readlines()
+            if not re.match('\s*#', line)
+        ]
+
+
+requirements = load_reqs('requirements.txt')
+test_requirements = load_reqs('test-requirements.txt')
+
+setup(
+    name='aioclustermanager',
+    version='0.1.0',
+    description='AsyncIO K8S and Nomad driver',
+    classifiers=[
+        'Development Status :: 2 - Pre-Alpha',
+        'Intended Audience :: Developers',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+    ],
+    url='http://github.com/onna/aioetcd3',
+    author='Ramon Navarro',
+    author_email='ramon@onna.com',
+    license='MIT',
+    packages=find_packages(),
+    zip_safe=False,
+    install_requires=requirements,
+    test_suite='tests',
+    tests_require=test_requirements
+)
