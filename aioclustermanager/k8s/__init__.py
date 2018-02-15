@@ -15,6 +15,9 @@ class K8SContextManager(object):
         self.client_key = None
 
     async def __aenter__(self):
+        return await self.open()
+
+    async def open(self):
         if self.environment['certificate'] is not None:
             # Certificate management
             ssl_client_context = ssl.create_default_context(
@@ -55,6 +58,9 @@ class K8SContextManager(object):
             verify=verify)
 
     async def __aexit__(self, exc_type, exc, tb):
+        await self.close()
+
+    async def close(self):
         if self.file is not None:
             os.unlink(self.file.name)
         await self.session.close()

@@ -34,7 +34,8 @@ K8S_JOB = {
 class K8SJob(Job):
     @property
     def active(self):
-        return self._raw['status']['active']
+        status = self._raw['status']
+        return False if 'active' not in status else status['active']
 
     @property
     def finished(self):
@@ -44,6 +45,14 @@ class K8SJob(Job):
     @property
     def id(self):
         return self._raw['metadata']['name']
+
+    @property
+    def command(self):
+        return self._raw['spec']['template']['spec']['containers'][0]['command']
+
+    @property
+    def image(self):
+        return self._raw['spec']['template']['spec']['containers'][0]['image']
 
     def create(self, namespace, name, image, **kw):
         job_info = deepcopy(K8S_JOB)

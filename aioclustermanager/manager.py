@@ -34,7 +34,6 @@ class ClusterManager(object):
             self, namespace, name, image,
             command=None, args=None,
             cpu_limit=None, mem_limit=None,
-            cpu_require=None, mem_require=None,
             envvars={},
             delete=False):
         exist = await self.caller.get_job(namespace, name)
@@ -77,6 +76,9 @@ class ClusterManager(object):
         for job in jobs:
             result[job.id] = await self.caller.get_job_executions(namespace, job.id)
         return result
+
+    async def list_job_executions(self, namespace, job_id):
+        return await self.caller.get_job_executions(namespace, job_id)
 
     async def wait_for_job_execution_status(self, namespace, name):
         status = 'Pending'
