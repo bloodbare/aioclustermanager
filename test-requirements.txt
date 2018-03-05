@@ -3,7 +3,6 @@ pyyaml
 pytest==3.2.1
 tox==2.7.0
 docker
-PyYAML==3.12
 Sphinx==1.6.3
 bumpversion==0.5.3
 coverage==4.4.1
@@ -13,3 +12,6 @@ wheel==0.29.0
 flake8-docstrings==1.1.0
 mock==2.0.0
 pifpaf>=0.27.1
+pytest-cov
+tox-travis
+codecov
