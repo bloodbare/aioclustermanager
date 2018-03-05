@@ -9,9 +9,8 @@ env:
 - CHANGE_MINIKUBE_NONE_USER=true
 
 install:
-- sudo pip install -U tox tox-travis codecov
-- sudo pip install -r requirements.txt
-- sudo pip install -r test-requirements.txt
+- pip install -r requirements.txt
+- pip install -r test-requirements.txt
 
 before_script:
 - curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/v1.7.0/bin/linux/amd64/kubectl
