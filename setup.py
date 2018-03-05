@@ -24,7 +24,7 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
     ],
-    url='http://github.com/onna/aioetcd3',
+    url='http://github.com/onna/aioclustermanager',
     author='Ramon Navarro',
     author_email='ramon@onna.com',
     license='MIT',

@@ -10,6 +10,8 @@ env:
 
 install:
 - sudo pip install -U tox tox-travis codecov
+- sudo pip install -r requirements.txt
+- sudo pip install -r test-requirements.txt
 
 before_script:
 - curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/v1.7.0/bin/linux/amd64/kubectl
@@ -28,7 +30,9 @@ before_script:
 - sudo mv nomad /usr/local/bin
 - nomad agent -dev &
 
-script: tox
+script:
+- flake8 aioclustermanager
+- py.test --cov=aioclustermanager --cov-report=report aioclustermanager
 
 after_success:
 - codecov
