@@ -70,11 +70,12 @@ class ClusterManager(object):
     async def wait_for_job(self, namespace, name):
         return await self.caller.wait_for_job(namespace, name)
 
-    async def list_job_executions(self, namespace):
+    async def list_jobs_executions(self, namespace):
         jobs = await self.list_jobs(namespace)
         result = {}
         for job in jobs:
-            result[job.id] = await self.caller.get_job_executions(namespace, job.id)
+            result[job.id] = await self.caller.get_job_executions(
+                namespace, job.id)
         return result
 
     async def list_job_executions(self, namespace, job_id):
@@ -114,8 +115,8 @@ class ClusterManager(object):
     # Only K8S
 
     async def install_tfjobs(self, namespace, cloud=None, install_helm=False):
-        chart = 'https://storage.googleapis.com/tf-on-k8s-dogfood-releases/latest/tf-job-operator-chart-latest.tgz'
-        call = ['helm', 'install', chart, '-n', 'tf-job', '--wait', '--replace']
+        chart = 'https://storage.googleapis.com/tf-on-k8s-dogfood-releases/latest/tf-job-operator-chart-latest.tgz'  # noqa
+        call = ['helm', 'install', chart, '-n', 'tf-job', '--wait', '--replace']  # noqa
         if cloud is not None:
             call.extend(['--set', 'cloud=' + cloud])
 
@@ -169,4 +170,3 @@ class ClusterManager(object):
 
     async def list_tfjobs(self, namespace):
         return await self.caller.list_tfjobs(namespace)
-

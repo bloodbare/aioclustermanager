@@ -1,6 +1,3 @@
-from copy import deepcopy
-
-
 class Job:
     """Generic job class."""
 
@@ -31,5 +28,3 @@ class Job:
 
     def payload(self):
         return self._raw
-
-
