@@ -20,8 +20,8 @@ before_script:
 - sudo mv minikube /usr/local/bin/
 - sudo minikube start --vm-driver=none --kubernetes-version=v1.7.0
 - minikube update-context
-- JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'; \
-    until kubectl get nodes -o jsonpath="$JSONPATH" 2>&1 | grep -q "Ready=True"; do sleep 1; done
+# - JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'; until kubectl get nodes -o jsonpath="$JSONPATH" 2>&1 | grep -q "Ready=True"; do sleep 1; done
+- sleep 5
 - curl -Lo nomad.tar.gz https://releases.hashicorp.com/nomad/0.7.1/nomad_0.7.1_linux_amd64-lxc.zip
 - unzip nomad.tar.gz
 - chmod +x nomad
