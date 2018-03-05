@@ -10,6 +10,7 @@ env:
 
 install:
 - sudo pip install -U tox tox-travis codecov
+- sudo apt-get -qq update
 - sudo apt-get install -y coreutils
 
 before_script:
