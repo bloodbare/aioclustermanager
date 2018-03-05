@@ -10,6 +10,7 @@ env:
 
 install:
 - sudo pip install -U tox tox-travis codecov
+- sudo apt-get install -y coreutils
 
 before_script:
 - curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/v1.7.0/bin/linux/amd64/kubectl && \
