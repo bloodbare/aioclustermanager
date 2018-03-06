@@ -64,5 +64,3 @@ class K8SContextManager(object):
         if self.file is not None:
             os.unlink(self.file.name)
         await self.session.close()
-
-

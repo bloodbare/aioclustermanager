@@ -21,7 +21,6 @@ async def k8s_config():
             CERT_DOCKER = user['user']['client-certificate-data']
             KEY_DOCKER = user['user']['client-key-data']
 
-
     config_k8s = {
         'user': os.environ.get('TEST_K8S_USER', None),
         'credentials': os.environ.get('TEST_K8S_CREDS', None),
@@ -32,6 +31,7 @@ async def k8s_config():
         'key': os.environ.get('TEST_K8S_KEY', KEY_DOCKER)
     }
     return config_k8s
+
 
 @pytest.fixture(scope='session')
 async def nomad_config():

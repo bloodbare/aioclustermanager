@@ -67,10 +67,10 @@ class K8STFJob(Job):
         job_info = deepcopy(K8S_JOB)
         job_info['metadata']['name'] = name
         job_info['metadata']['namespace'] = namespace
-        job_info['spec']['replicaSpecs'][0]['template']['spec']['containers'][0]['name'] = name
-        job_info['spec']['replicaSpecs'][0]['template']['spec']['containers'][0]['image'] = image
-        job_info['spec']['replicaSpecs'][1]['template']['spec']['containers'][0]['name'] = name
-        job_info['spec']['replicaSpecs'][1]['template']['spec']['containers'][0]['image'] = image
+        job_info['spec']['replicaSpecs'][0]['template']['spec']['containers'][0]['name'] = name  # noqa
+        job_info['spec']['replicaSpecs'][0]['template']['spec']['containers'][0]['image'] = image  # noqa
+        job_info['spec']['replicaSpecs'][1]['template']['spec']['containers'][0]['name'] = name  # noqa
+        job_info['spec']['replicaSpecs'][1]['template']['spec']['containers'][0]['image'] = image  # noqa
 
         if 'command' in kw:
             job_info['spec']['replicaSpecs'][0]['template']['spec']['containers'][0]['command'] = kw['command']  # noqa
@@ -101,7 +101,7 @@ class K8STFJob(Job):
         return job_info
 
     def get_payload(self):
-        container = self._raw['spec']['replicaSpecs'][0]['template']['spec']['containers'][0]
+        container = self._raw['spec']['replicaSpecs'][0]['template']['spec']['containers'][0]  # noqa
         for env in container['env']:
             if env['name'] == 'PAYLOAD':
                 data = env['value']

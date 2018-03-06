@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 WATCH_OPS = {
     'namespace': 'https://{endpoint}/api/v1/watch/namespaces/{namespace}',
-    'job': 'https://{endpoint}/apis/batch/v1/watch/namespaces/{namespace}/jobs/{name}',
+    'job': 'https://{endpoint}/apis/batch/v1/watch/namespaces/{namespace}/jobs/{name}',  # noqa
     'tfjob':
         'https://{endpoint}/apis/kubeflow.org/v1alpha1/watch/namespaces/{namespace}/tfjobs/{name}'  # noqa
 }
@@ -143,7 +143,7 @@ class K8SCaller(object):
         if result is None:
             return None
         else:
-            return K8STFJob(data=result)   
+            return K8STFJob(data=result)
 
     async def get_job_executions(self, namespace, name):
         url = GET_OPS['executions']
@@ -310,7 +310,7 @@ class K8SCaller(object):
                 return await resp.json()
             else:
                 text = await resp.text()
-                logger.error('Error calling k8s: %d - %s' % (resp.status, text))
+                logger.error('Error calling k8s: %d - %s' % (resp.status, text))  # noqa
                 raise Exception('Error calling k8s')
 
     async def delete(self, url, version, payload):
@@ -331,5 +331,5 @@ class K8SCaller(object):
                 return None
             else:
                 text = await resp.text()
-                logger.error('Error calling k8s: %d - %s' % (resp.status, text))
+                logger.error('Error calling k8s: %d - %s' % (resp.status, text))  # noqa
                 raise Exception('Error calling k8s')

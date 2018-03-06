@@ -48,7 +48,7 @@ class K8SJob(Job):
 
     @property
     def command(self):
-        return self._raw['spec']['template']['spec']['containers'][0]['command']
+        return self._raw['spec']['template']['spec']['containers'][0]['command']  # noqa
 
     @property
     def image(self):

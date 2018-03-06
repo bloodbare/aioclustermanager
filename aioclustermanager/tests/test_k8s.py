@@ -124,6 +124,6 @@ async def test_get_tfjobs_k8s(kubernetes):
     )
     assert result is True
 
-    tf_job = await kubernetes.get_tfjob('aiocluster-test', 'test-tfjob')
+    await kubernetes.get_tfjob('aiocluster-test', 'test-tfjob')
 
-    tf_jobs = await kubernetes.list_tfjobs('aiocluster-test')
+    await kubernetes.list_tfjobs('aiocluster-test')
