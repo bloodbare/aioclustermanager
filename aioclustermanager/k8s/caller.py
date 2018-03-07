@@ -241,6 +241,7 @@ class K8SCaller(object):
             cpu_limit=cpu_limit, mem_limit=mem_limit,
             envvars=envvars, workers=workers,
             ps=ps, masters=masters, tb_gs=tb_gs)
+        import pdb; pdb.set_trace()
         return await self.post(url, version, obj.payload())
 
     async def wait_for_job(self, namespace, name):
@@ -250,7 +251,8 @@ class K8SCaller(object):
             name=name,
             endpoint=self.endpoint)
         try:
-            async for data in self._watch(url, 10):
+            # We only wait 1 hour
+            async for data in self._watch(url, 3660):
                 json_data = json.loads(data)
                 if 'conditions' not in json_data['object']['status']:
                     continue
@@ -297,7 +299,7 @@ class K8SCaller(object):
             return await resp.json()
 
     async def post(self, url, version, payload):
-        payload['api_version'] = version
+        payload['apiVersion'] = version
         async with self.session.post(
                 url,
                 json=payload,
@@ -314,7 +316,7 @@ class K8SCaller(object):
                 raise Exception('Error calling k8s')
 
     async def delete(self, url, version, payload):
-        payload['api_version'] = version
+        payload['apiVersion'] = version
         async with self.session.delete(
                 url,
                 headers={

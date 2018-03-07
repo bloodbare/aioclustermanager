@@ -97,7 +97,7 @@ class ClusterManager(object):
         return status
 
     async def waiting_jobs(self, namespace):
-        jobs = await self.list_job_executions(namespace)
+        jobs = await self.list_jobs_executions(namespace)
         result = []
         for key, value in jobs.items():
             if len(value) == 0:
@@ -105,7 +105,7 @@ class ClusterManager(object):
         return result
 
     async def running_jobs(self, namespace):
-        jobs = await self.list_job_executions(namespace)
+        jobs = await self.list_jobs_executions(namespace)
         result = []
         for key, value in jobs.items():
             if value.is_running():

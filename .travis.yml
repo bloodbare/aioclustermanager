@@ -24,11 +24,16 @@ before_script:
 - minikube update-context
 # - JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'; until kubectl get nodes -o jsonpath="$JSONPATH" 2>&1 | grep -q "Ready=True"; do sleep 1; done
 - sleep 5
+- curl -Lo helm.tar.gz https://storage.googleapis.com/kubernetes-helm/helm-v2.8.1-linux-amd64.tar.gz
+- tar -zxvf helm.tar.gz
+- sudo +x linux-amd64/helm
+- sudo mv linux-amd64/helm /usr/local/bin
 - curl -Lo nomad.tar.gz https://releases.hashicorp.com/nomad/0.7.1/nomad_0.7.1_linux_amd64.zip
 - unzip nomad.tar.gz
 - chmod +x nomad
 - sudo mv nomad /usr/local/bin
 - nomad agent -dev &
+- helm init
 
 script:
 - flake8 aioclustermanager
