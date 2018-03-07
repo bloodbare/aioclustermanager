@@ -21,8 +21,13 @@ async def k8s_config():
             CERT_DOCKER = user['user']['client-certificate-data']
             KEY_DOCKER = user['user']['client-key-data']
         if user['name'] == 'minikube':
-            CERT_DOCKER = user['user']['client-certificate-data']
-            KEY_DOCKER = user['user']['client-key-data']
+            cert_file = user['user']['client-certificate']
+            key_file = user['user']['client-key']
+            with open(cert_file, 'r') as cert_obj:
+                CERT_DOCKER = cert_obj.read()
+
+            with open(key_file, 'r') as key_obj:
+                KEY_DOCKER = key_obj.read()
 
     config_k8s = {
         'user': os.environ.get('TEST_K8S_USER', None),
