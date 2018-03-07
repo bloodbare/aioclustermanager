@@ -34,6 +34,7 @@ class K8SContextManager(object):
             conn = aiohttp.TCPConnector(ssl_context=ssl_client_context)
             self.session = aiohttp.ClientSession(connector=conn)
         elif self.environment['certificate_file'] is not None:
+            print('Loading cert files')
             ssl_client_context = ssl.create_default_context(
                 purpose=ssl.Purpose.CLIENT_AUTH)
             ssl_client_context.load_cert_chain(
