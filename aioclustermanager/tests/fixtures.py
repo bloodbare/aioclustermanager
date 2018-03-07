@@ -32,6 +32,8 @@ async def k8s_config():
     for cluster in configuration['clusters']:
         if cluster['name'] == 'minikube' and defined is False:
             K8S_ENDPOINT = cluster['cluster']['server']
+            K8S_ENDPOINT = K8S_ENDPOINT.replace("https://", "")
+            print('K8S: ' + K8S_ENDPOINT)
 
     config_k8s = {
         'user': os.environ.get('TEST_K8S_USER', None),
