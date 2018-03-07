@@ -2,6 +2,7 @@ import aiohttp
 import tempfile
 import ssl
 import os
+import binascii
 from base64 import b64decode
 from aioclustermanager.k8s.caller import K8SCaller
 
@@ -23,10 +24,20 @@ class K8SContextManager(object):
             ssl_client_context = ssl.create_default_context(
                 purpose=ssl.Purpose.CLIENT_AUTH)
             self.cert_file = tempfile.NamedTemporaryFile(delete=False)
-            self.cert_file.write(b64decode(self.environment['certificate']))
+            cf = self.environment['certificate']
+            try:
+                cf = b64decode(cf)
+            except binascii.Error:
+                pass
+            self.cert_file.write(cf)
             self.cert_file.close()
             self.client_key = tempfile.NamedTemporaryFile(delete=False)
-            self.client_key.write(b64decode(self.environment['key']))
+            cf = self.environment['key']
+            try:
+                cf = b64decode(cf)
+            except binascii.Error:
+                pass
+            self.client_key.write(cf)
             self.client_key.close()
 
             ssl_client_context.load_cert_chain(
