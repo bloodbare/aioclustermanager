@@ -31,7 +31,7 @@ async def k8s_config():
             KEY_DOCKER_FILE = user['user']['client-key']
     for cluster in configuration['clusters']:
         if cluster['name'] == 'minikube' and defined is False:
-            K8S_ENDPOINT = cluster['server']
+            K8S_ENDPOINT = cluster['cluster']['server']
 
     config_k8s = {
         'user': os.environ.get('TEST_K8S_USER', None),
