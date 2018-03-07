@@ -48,12 +48,15 @@ class K8SContextManager(object):
             self.session = aiohttp.ClientSession(auth=basic_auth)
 
         ssl_context = None
-        if self.environment['ca']:
+        if self.environment['ca'] is not None:
             self.file = tempfile.NamedTemporaryFile(delete=False)
             self.file.write(bytes(self.environment['ca'], encoding='utf-8'))
             self.file.close()
             ssl_context = ssl.SSLContext()
             ssl_context.load_verify_locations(self.file.name)
+        elif self.environment['ca_file'] is not None:
+            ssl_context = ssl.SSLContext()
+            ssl_context.load_verify_locations(self.environment['ca_file'])
 
         if self.environment['skip_ssl']:
             verify = False

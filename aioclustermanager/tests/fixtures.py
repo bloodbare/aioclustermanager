@@ -18,6 +18,8 @@ async def k8s_config():
     KEY_DOCKER = None
     CERT_DOCKER_FILE = None
     KEY_DOCKER_FILE = None
+    K8S_CA = None
+    K8S_CA_FILE = None
     K8S_ENDPOINT = 'localhost:6443'
     # Looking for docker-for-desktop or minikube
     defined = False
@@ -33,12 +35,13 @@ async def k8s_config():
         if cluster['name'] == 'minikube' and defined is False:
             K8S_ENDPOINT = cluster['cluster']['server']
             K8S_ENDPOINT = K8S_ENDPOINT.replace("https://", "")
-            print('K8S: ' + K8S_ENDPOINT)
+            K8S_CA_FILE = cluster['cluster']['certificate-authority']
 
     config_k8s = {
         'user': os.environ.get('TEST_K8S_USER', None),
         'credentials': os.environ.get('TEST_K8S_CREDS', None),
-        'ca': os.environ.get('TEST_K8S_CA', None),
+        'ca': os.environ.get('TEST_K8S_CA', K8S_CA),
+        'ca_file': os.environ.get('TEST_K8S_CA_FILE', K8S_CA_FILE),
         'endpoint': os.environ.get('TEST_K8S_ENDPOINT', K8S_ENDPOINT),
         'skip_ssl': True,
         'certificate': os.environ.get('TEST_K8S_CERT', CERT_DOCKER),
