@@ -22,7 +22,8 @@ before_script:
 - sudo mv minikube /usr/local/bin/
 - sudo minikube start --vm-driver=none --kubernetes-version=v1.7.0
 - minikube update-context
-# - JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'; until kubectl get nodes -o jsonpath="$JSONPATH" 2>&1 | grep -q "Ready=True"; do sleep 1; done
+- kubectl config view
+- JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'; until kubectl get nodes -o jsonpath="$JSONPATH" 2>&1 | grep -q "Ready=True"; do sleep 1; done
 - sleep 10
 - curl -Lo helm.tar.gz https://storage.googleapis.com/kubernetes-helm/helm-v2.8.1-linux-amd64.tar.gz
 - tar -zxvf helm.tar.gz
