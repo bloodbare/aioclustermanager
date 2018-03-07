@@ -37,7 +37,7 @@ before_script:
 
 script:
 - flake8 aioclustermanager
-- py.test --cov=aioclustermanager --cov-report=xml aioclustermanager
+- py.test --cov=aioclustermanager --cov-report=xml aioclustermanager -s
 
 after_success:
 - codecov
