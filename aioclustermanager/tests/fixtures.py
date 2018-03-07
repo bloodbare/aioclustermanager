@@ -20,8 +20,11 @@ async def k8s_config():
     KEY_DOCKER_FILE = None
     K8S_CA = None
     K8S_CA_FILE = None
+    K8S_USER = None
+    K8S_PASSWORD = None
     K8S_SKIP_SSL = True
     K8S_ENDPOINT = 'localhost:6443'
+    TRAVIS = os.environ.get('TRAVIS', 'false')
     # Looking for docker-for-desktop or minikube
     defined = False
     for user in configuration['users']:
@@ -29,9 +32,12 @@ async def k8s_config():
             CERT_DOCKER = user['user']['client-certificate-data']
             KEY_DOCKER = user['user']['client-key-data']
             defined = True
-        if user['name'] == 'minikube' and defined is False:
+        if user['name'] == 'minikube' and defined is False and TRAVIS != 'true':  # noqa
             CERT_DOCKER_FILE = user['user']['client-certificate']
             KEY_DOCKER_FILE = user['user']['client-key']
+        if TRAVIS == 'true':
+            K8S_USER = 'testinguser'
+            K8S_PASSWORD = '12345678'
     for cluster in configuration['clusters']:
         if cluster['name'] == 'minikube' and defined is False:
             K8S_SKIP_SSL = False
@@ -40,8 +46,8 @@ async def k8s_config():
             K8S_CA_FILE = cluster['cluster']['certificate-authority']
 
     config_k8s = {
-        'user': os.environ.get('TEST_K8S_USER', None),
-        'credentials': os.environ.get('TEST_K8S_CREDS', None),
+        'user': os.environ.get('TEST_K8S_USER', K8S_USER),
+        'credentials': os.environ.get('TEST_K8S_CREDS', K8S_PASSWORD),
         'ca': os.environ.get('TEST_K8S_CA', K8S_CA),
         'ca_file': os.environ.get('TEST_K8S_CA_FILE', K8S_CA_FILE),
         'endpoint': os.environ.get('TEST_K8S_ENDPOINT', K8S_ENDPOINT),
