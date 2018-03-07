@@ -37,7 +37,7 @@ async def k8s_config():
         'user': os.environ.get('TEST_K8S_USER', None),
         'credentials': os.environ.get('TEST_K8S_CREDS', None),
         'ca': os.environ.get('TEST_K8S_CA', None),
-        'endpoint': os.environ.get('TEST_K8S_ENDPOINT', 'localhost:6443'),
+        'endpoint': os.environ.get('TEST_K8S_ENDPOINT', K8S_ENDPOINT),
         'skip_ssl': True,
         'certificate': os.environ.get('TEST_K8S_CERT', CERT_DOCKER),
         'key': os.environ.get('TEST_K8S_KEY', KEY_DOCKER),
