@@ -18,6 +18,7 @@ async def k8s_config():
     KEY_DOCKER = None
     CERT_DOCKER_FILE = None
     KEY_DOCKER_FILE = None
+    K8S_ENDPOINT = 'localhost:6443'
     # Looking for docker-for-desktop or minikube
     defined = False
     for user in configuration['users']:
@@ -28,6 +29,9 @@ async def k8s_config():
         if user['name'] == 'minikube' and defined is False:
             CERT_DOCKER_FILE = user['user']['client-certificate']
             KEY_DOCKER_FILE = user['user']['client-key']
+    for cluster in configuration['clusters']:
+        if cluster['name'] == 'minikube' and defined is False:
+            K8S_ENDPOINT = cluster['server']
 
     config_k8s = {
         'user': os.environ.get('TEST_K8S_USER', None),
