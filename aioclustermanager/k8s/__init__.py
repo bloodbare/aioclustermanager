@@ -2,7 +2,6 @@ import aiohttp
 import tempfile
 import ssl
 import os
-import binascii
 from base64 import b64decode
 from aioclustermanager.k8s.caller import K8SCaller
 
@@ -24,24 +23,22 @@ class K8SContextManager(object):
             ssl_client_context = ssl.create_default_context(
                 purpose=ssl.Purpose.CLIENT_AUTH)
             self.cert_file = tempfile.NamedTemporaryFile(delete=False)
-            cf = self.environment['certificate']
-            try:
-                cf = b64decode(cf)
-            except binascii.Error:
-                pass
-            self.cert_file.write(cf)
+            self.cert_file.write(b64decode(self.environment['certificate']))
             self.cert_file.close()
             self.client_key = tempfile.NamedTemporaryFile(delete=False)
-            cf = self.environment['key']
-            try:
-                cf = b64decode(cf)
-            except binascii.Error:
-                pass
-            self.client_key.write(cf)
+            self.client_key.write(b64decode(self.environment['key']))
             self.client_key.close()
 
             ssl_client_context.load_cert_chain(
                 certfile=self.cert_file.name, keyfile=self.client_key.name)
+            conn = aiohttp.TCPConnector(ssl_context=ssl_client_context)
+            self.session = aiohttp.ClientSession(connector=conn)
+        elif self.environment['certificate_file'] is not None:
+            ssl_client_context = ssl.create_default_context(
+                purpose=ssl.Purpose.CLIENT_AUTH)
+            ssl_client_context.load_cert_chain(
+                certfile=self.environment['certificate_file'],
+                keyfile=self.environment['key_file'])
             conn = aiohttp.TCPConnector(ssl_context=ssl_client_context)
             self.session = aiohttp.ClientSession(connector=conn)
         else:

@@ -15,19 +15,19 @@ async def k8s_config():
         configuration = yaml.load(f)
 
     CERT_DOCKER = None
+    KEY_DOCKER = None
+    CERT_DOCKER_FILE = None
+    KEY_DOCKER_FILE = None
     # Looking for docker-for-desktop or minikube
+    defined = False
     for user in configuration['users']:
         if user['name'] == 'docker-for-desktop':
             CERT_DOCKER = user['user']['client-certificate-data']
             KEY_DOCKER = user['user']['client-key-data']
-        if user['name'] == 'minikube':
-            cert_file = user['user']['client-certificate']
-            key_file = user['user']['client-key']
-            with open(cert_file, 'r') as cert_obj:
-                CERT_DOCKER = cert_obj.read()
-
-            with open(key_file, 'r') as key_obj:
-                KEY_DOCKER = key_obj.read()
+            defined = True
+        if user['name'] == 'minikube' and defined is False:
+            CERT_DOCKER_FILE = user['user']['client-certificate']
+            KEY_DOCKER_FILE = user['user']['client-key']
 
     config_k8s = {
         'user': os.environ.get('TEST_K8S_USER', None),
@@ -36,7 +36,9 @@ async def k8s_config():
         'endpoint': os.environ.get('TEST_K8S_ENDPOINT', 'localhost:6443'),
         'skip_ssl': True,
         'certificate': os.environ.get('TEST_K8S_CERT', CERT_DOCKER),
-        'key': os.environ.get('TEST_K8S_KEY', KEY_DOCKER)
+        'key': os.environ.get('TEST_K8S_KEY', KEY_DOCKER),
+        'certificate_file': os.environ.get('TEST_K8S_CERT_FILE', CERT_DOCKER_FILE),  # noqa
+        'key_file': os.environ.get('TEST_K8S_KEY_FILE', KEY_DOCKER_FILE)
     }
     return config_k8s
 
