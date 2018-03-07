@@ -294,6 +294,9 @@ class K8SCaller(object):
                 verify_ssl=self.verify) as resp:
             if resp.status == 404:
                 return None
+            if resp.status != 200:
+                text = await resp.text()
+                print('Error: %d - %s' % (resp.status, text))
             assert resp.status == 200
             return await resp.json()
 
