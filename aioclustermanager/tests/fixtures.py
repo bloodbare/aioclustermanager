@@ -15,9 +15,12 @@ async def k8s_config():
         configuration = yaml.load(f)
 
     CERT_DOCKER = None
-    # Looking for docker-for-desktop
+    # Looking for docker-for-desktop or minikube
     for user in configuration['users']:
         if user['name'] == 'docker-for-desktop':
+            CERT_DOCKER = user['user']['client-certificate-data']
+            KEY_DOCKER = user['user']['client-key-data']
+        if user['name'] == 'minikube':
             CERT_DOCKER = user['user']['client-certificate-data']
             KEY_DOCKER = user['user']['client-key-data']
 

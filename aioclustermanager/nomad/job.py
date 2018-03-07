@@ -1,4 +1,3 @@
-import json
 from copy import deepcopy
 from aioclustermanager.job import Job
 
@@ -93,10 +92,6 @@ class NomadJob(Job):
         self._raw['Job']['Datacenters'] = datacenters
 
     def create(self, namespace, name, image, **kw):
-        """
-        nomad_constraints
-        docker_network_mode
-        """
         job_info = deepcopy(NOMAD_JOB)
 
         real_job_id = '{}-{}'.format(namespace, name)
@@ -110,7 +105,7 @@ class NomadJob(Job):
         if 'nomad_constraints' in kw and kw['nomad_constraints'] is not None:
             job_info['Job']['Constraints'] = kw['nomad_constraints']
 
-        if 'docker_network_mode' in kw and kw['docker_network_mode'] is not None:
+        if 'docker_network_mode' in kw and kw['docker_network_mode'] is not None:  # noqa
             job_info['Job']['TaskGroups'][0]['Tasks'][0]['Config']['network_mode'] = kw['docker_network_mode']  # noqa
 
         if 'volumes' in kw and kw['volumes'] is not None:
@@ -142,4 +137,3 @@ class NomadJob(Job):
             job_info['Job']['Datacenters'] = kw['datacenters']
 
         return job_info
-
