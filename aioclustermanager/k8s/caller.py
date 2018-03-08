@@ -38,7 +38,7 @@ POST_OPS = {
     'namespace':
         ('https://{endpoint}/api/v1/namespaces', 'v1'),
     'job':
-        ('https://{endpoint}/apis/batch/v1/namespaces/{namespace}/jobs', 'v1'),
+        ('https://{endpoint}/apis/batch/v1/namespaces/{namespace}/jobs', 'batch/v1'),  # noqa
     'tfjob':
         ('https://{endpoint}/apis/kubeflow.org/v1alpha1/namespaces/{namespace}/tfjobs', 'kubeflow.org/v1alpha1'),  # noqa
     'quota':
@@ -49,7 +49,7 @@ DELETE_OPS = {
     'namespace':
         ('https://{endpoint}/api/v1/namespaces/{namespace}', 'v1'),
     'job':
-        ('https://{endpoint}/apis/batch/v1/namespaces/{namespace}/jobs/{name}', 'v1'),  # noqa
+        ('https://{endpoint}/apis/batch/v1/namespaces/{namespace}/jobs/{name}', 'batch/v1'),  # noqa
     'tfjob':
         ('https://{endpoint}/apis/kubeflow.org/v1alpha1/namespaces/{namespace}/tfjobs/{name}', 'v1')  # noqa
 }
