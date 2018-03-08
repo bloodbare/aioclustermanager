@@ -139,6 +139,7 @@ class ClusterManager(object):
             *call,
             stdout=asyncio.subprocess.PIPE,
         )
+        await asyncio.sleep(20)
         await create
 
     async def create_tfjob(
