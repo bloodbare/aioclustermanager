@@ -3,16 +3,13 @@ python:
 - 3.6
 sudo: required
 services:
-  - docker
-
+- docker
 env:
 - CHANGE_MINIKUBE_NONE_USER=true
-
 install:
 - pip install -r requirements.txt
 - pip install -r test-requirements.txt
 - python setup.py develop
-
 before_script:
 - curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/v1.7.0/bin/linux/amd64/kubectl
 - chmod +x kubectl
@@ -23,7 +20,9 @@ before_script:
 - sudo minikube start --vm-driver=none --kubernetes-version=v1.7.0 --extra-config=apiserver.Authentication.PasswordFile.BasicAuthFile=testing.csv
 - minikube update-context
 - kubectl config view
-- JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'; until kubectl get nodes -o jsonpath="$JSONPATH" 2>&1 | grep -q "Ready=True"; do sleep 1; done
+- JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}';
+  until kubectl get nodes -o jsonpath="$JSONPATH" 2>&1 | grep -q "Ready=True"; do
+  sleep 1; done
 - kubectl get pods
 - curl -Lo helm.tar.gz https://storage.googleapis.com/kubernetes-helm/helm-v2.8.1-linux-amd64.tar.gz
 - tar -zxvf helm.tar.gz
@@ -35,30 +34,32 @@ before_script:
 - sudo mv nomad /usr/local/bin
 - docker run -v /usr/local/bin:/hostbin munnerz/ubuntu-nsenter cp /nsenter /hostbin/nsenter
 - helm init
-- JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'; until kubectl get deploy -n kube-system -o jsonpath="$JSONPATH" 2>&1 | grep -q "tiller-deploy:Available=True"; do sleep 1; done
+- JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}';
+  until kubectl get deploy -n kube-system -o jsonpath="$JSONPATH" 2>&1 | grep -q "tiller-deploy:Available=True";
+  do sleep 1; done
 - sleep 10
 - kubectl get pods --namespace kube-system
 - helm version
-- helm install https://storage.googleapis.com/tf-on-k8s-dogfood-releases/latest/tf-job-operator-chart-latest.tgz -n tf-job --wait --replace
-- JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'; until kubectl get deploy -o jsonpath="$JSONPATH" 2>&1 | grep -q "tf-job-operator:Available=True"; do sleep 1; done
+- helm install https://storage.googleapis.com/tf-on-k8s-dogfood-releases/latest/tf-job-operator-chart-latest.tgz
+  -n tf-job --wait --replace
+- JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}';
+  until kubectl get deploy -o jsonpath="$JSONPATH" 2>&1 | grep -q "tf-job-operator:Available=True";
+  do sleep 1; done
 - sleep 10
 - kubectl get pods --all-namespaces
-- nomad agent -dev &  
-
+- nomad agent -dev &
 script:
 - flake8 aioclustermanager
 - py.test --cov=aioclustermanager --cov-report=xml aioclustermanager -s
-
 after_success:
 - codecov
 - git describe --always --tags --long > VERSION
 - rm -rf *.egg-info
-
 deploy:
   provider: pypi
   user: ramon.nb
   password:
-    secure: n7SURGJ2syfXP4Sl6ilLdOgkC3SaeLOGQGau8GzUseDZVdgfMnvZbH7NkqxiTtypnt9p36pQRGbIsfzRI0xCcW2Id5jtRVKYUycsJFmeRESVZ4i35gUaCeiZ+djDvkXv+qealFeoTP4ihGS9HOLA5tqpKImAzk68VeobB0ywa3yZ40KFpYhQ2fAcR6PwjCNN7+N13DEx9ICwe9Y761hhJKTikX4bFVWwZw52DdKA+5trUarEHVxseKPCzCePxFQJ5yJWvlE+yAJwx0YizKcFAc9vSRWGCEn635wWlL7k5Al1zUrwDvBNsQN1StVy8/HYjT8qyC28SM4Pv4XSxWa1dYstNwoKi67/JP8aEChK1h8Lc+eD1y/RjZo8rt7zhzv6HZuhpjBxGr4gOjUqwRVkfAlc5NHhfFmEsDeRTzaOJ51lZPA6Pa1v+ZfiyqBqQ+VKgmwwG2dqq4YvRe/7Lt7jlrDg0zLkfEYMkHCPvuL3ff3mdggijDGgilzNs3XCUVdQLzXzz1iS2TIqUXVeYQi/e5aaFs9dxkDFa91i+YjQO5yqs2/nqIGCBSeAFw7i/Wr2iZP97HU5NgwOoV8RHbwPoP1B8bssL/KO5ukY+2uyHhYsy8VEN+rZsGnHeQhwwS3Gm2A9yhwq9GoXk4RbxyaE27QSj6sHK2H3IXJa/+gva80=
+    secure: J05WnI1868v+GTxWDyArbRUhyDqPtzw0gXDlaeVCPVqREuEN3cp2H3rSTrd6kSosAJAh4hgneE+aLw3xMvlxGWC7xNSoGty5zHpv0h0YKqTBCFvCwbo9esUT4FnnMEg4pcdgx2oPv7E3iCGD1ncVRP3SdjVf3TsKVyWPvcf9li0IrAtn+WZAI3rJTKWloXIoPtHYjR4P7MPmdD3aMifb6qWMThsnVpRddhA/0lZrFP5QSOIGSZ+Q7XR2/YLKHFAl+LH2KCxYkbvnd/tZURUdehBdvjes9d9S19VRmkfhc0snwJUajowGjOInfTuJmbvTcvq/sVEYieP9+OmyYPQXijiu0hCA1Anuw9hLYhQEb8PgLe/djG/WNZHlRupzUk1qBkDypkWbNnmkowRX0QPGjOdeDygyjLQ6mOVRcU7cxRUqe0H46vLS//uE9lTNuPXAmUQN3APvytwTYYXYDdldTSBtaYAo64afCVN7EqsKQoU3GUcrraD3rYpJbIyuLEamSFwwxJ1wCymHgF6x2DgGanJn70u2M3r3Xg5HhhHqB1Y6uLfAHivwcOuZAbuy257UuaV2R4t5vi5OEJhiLLmnUdHeiEJBavGm9FxyYnHbxreoFXh5mBCILurWOzu983LATmfhrkFMjyNsKNaNkIEs+6O7y9azlBC7IYFyaKNc8Sc=
   on:
     branch: master
   distributions: sdist bdist_wheel

@@ -10,13 +10,13 @@ def load_reqs(filename):
             if not re.match('\s*#', line)
         ]
 
-
+version = open('VERSION').read()
 requirements = load_reqs('requirements.txt')
 test_requirements = load_reqs('test-requirements.txt')
 
 setup(
     name='aioclustermanager',
-    version='0.1.1',
+    version=version,
     description='AsyncIO K8S and Nomad driver',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
