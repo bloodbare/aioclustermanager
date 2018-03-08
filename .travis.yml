@@ -33,8 +33,10 @@ before_script:
 - unzip nomad.tar.gz
 - chmod +x nomad
 - sudo mv nomad /usr/local/bin
-- nomad agent -dev &
 - helm init
+- helm version
+- kubectl get pods --namespace kube-system
+- nomad agent -dev &
 
 script:
 - flake8 aioclustermanager
