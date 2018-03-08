@@ -16,7 +16,7 @@ test_requirements = load_reqs('test-requirements.txt')
 
 setup(
     name='aioclustermanager',
-    version='0.1.0',
+    version='0.1.1',
     description='AsyncIO K8S and Nomad driver',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
