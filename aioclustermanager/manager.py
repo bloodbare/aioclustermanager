@@ -1,10 +1,14 @@
 import asyncio
+import logging
+
+logger = logging.getLogger('aioclustermanager')
 
 
-class ClusterManager(object):
+class ClusterManager:
 
     def __init__(self, caller):
         self._caller = caller
+        self._const = caller.constants
 
     @property
     def caller(self):
@@ -82,18 +86,19 @@ class ClusterManager(object):
         return await self.caller.get_job_executions(namespace, job_id)
 
     async def wait_for_job_execution_status(self, namespace, name):
-        status = 'Pending'
-        while status not in ['Running', 'Error', 'Succeeded']:
+        status = self._const.PENDING
+        while status not in [self._const.RUNNING, self._const.ERROR,
+                             self._const.SUCCEEDED]:
             await asyncio.sleep(10)
             executions = await self.caller.get_job_executions(namespace, name)
             # It can be multiple executions of a job
-            # print(executions.statuses())
+            logger.debug(executions.statuses())
             if executions.has_failed_anytime():
-                status = 'Error'
+                status = self._const.ERROR
             elif executions.is_running():
-                status = 'Running'
+                status = self._const.RUNNING
             elif executions.is_done():
-                status = 'Succeeded'
+                status = self._const.SUCCEEDED
         return status
 
     async def waiting_jobs(self, namespace):

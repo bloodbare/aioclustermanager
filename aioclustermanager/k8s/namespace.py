@@ -1,6 +1,5 @@
 from copy import deepcopy
 
-
 K8S_NAMESPACE = {
     "kind": "Namespace",
     "metadata": {

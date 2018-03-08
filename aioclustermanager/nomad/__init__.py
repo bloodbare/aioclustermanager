@@ -1,8 +1,9 @@
-import aiohttp
 from aioclustermanager.nomad.caller import NomadCaller
 
+import aiohttp
 
-class NomadContextManager(object):
+
+class NomadContextManager:
     def __init__(self, environment):
         self.environment = environment
         self.session = None

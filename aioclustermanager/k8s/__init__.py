@@ -1,9 +1,13 @@
-import aiohttp
-import tempfile
-import ssl
-import os
-from base64 import b64decode
 from aioclustermanager.k8s.caller import K8SCaller
+from base64 import b64decode
+
+import aiohttp
+import logging
+import os
+import ssl
+import tempfile
+
+logger = logging.getLogger('aioclustermanager')
 
 
 class K8SContextManager(object):
@@ -34,7 +38,7 @@ class K8SContextManager(object):
             conn = aiohttp.TCPConnector(ssl_context=ssl_client_context)
             self.session = aiohttp.ClientSession(connector=conn)
         elif self.environment['certificate_file'] is not None:
-            print('Loading cert files')
+            logger.debug('Loading cert files')
             ssl_client_context = ssl.create_default_context(
                 purpose=ssl.Purpose.CLIENT_AUTH)
             ssl_client_context.load_cert_chain(

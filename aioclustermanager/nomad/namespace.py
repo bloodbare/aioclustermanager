@@ -1,12 +1,11 @@
 from copy import deepcopy
 
-
 NOMAD_NAMESPACE = {
     "name": "",
 }
 
 
-class NomadNamespace(object):
+class NomadNamespace:
 
     def __init__(self, name=None, data=None):
         if data is not None:

@@ -1,32 +1,33 @@
 from aioclustermanager.execution import Execution
+from aioclustermanager.nomad.const import FAILED, PENDING, RUNNING, SUCCEEDED
 
 
 class NomadExecution(Execution):
 
     @property
     def pending(self):
-        if self.status == 'pending':
+        if self.status == PENDING:
             return True
         else:
             return False
 
     @property
     def running(self):
-        if self.status == 'running':
+        if self.status == RUNNING:
             return True
         else:
             return False
 
     @property
     def failed(self):
-        if self.status == 'failed':
+        if self.status == FAILED:
             return True
         else:
             return False
 
     @property
     def finished(self):
-        if self.status == 'complete':
+        if self.status == SUCCEEDED:
             return True
         else:
             return False

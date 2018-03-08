@@ -1,14 +1,16 @@
-import logging
-import json
-import concurrent
-from aioclustermanager.k8s.namespace import K8SNamespace
+from aioclustermanager.k8s import const
 from aioclustermanager.k8s.delete import K8SDelete
-from aioclustermanager.k8s.quota import K8SQuota
+from aioclustermanager.k8s.executions_list import K8SExecutionList
 from aioclustermanager.k8s.job import K8SJob
+from aioclustermanager.k8s.job_list import K8SJobList
+from aioclustermanager.k8s.namespace import K8SNamespace
+from aioclustermanager.k8s.quota import K8SQuota
 from aioclustermanager.k8s.tf_job import K8STFJob
 from aioclustermanager.k8s.tf_job_list import K8STFJobList
-from aioclustermanager.k8s.job_list import K8SJobList
-from aioclustermanager.k8s.executions_list import K8SExecutionList
+
+import concurrent
+import json
+import logging
 
 logger = logging.getLogger(__name__)
 
@@ -56,12 +58,14 @@ DELETE_OPS = {
 
 
 class K8SCaller(object):
+    constants = const
+    _type = 'k8s'
+
     def __init__(self, ssl_context, endpoint, session, verify=True):
         self.ssl_context = ssl_context
         self.endpoint = endpoint
         self.session = session
         self.verify = verify
-        self._type = 'k8s'
 
     @property
     def type(self):
@@ -272,7 +276,6 @@ class K8SCaller(object):
             assert resp.status == 200
             while True:
                 data, end_of_http = await resp.content.readchunk()
-                # print(b'Data: ' + data)
                 yield data
 
     async def watch(self, url, value=None, timeout=20):
@@ -296,7 +299,7 @@ class K8SCaller(object):
                 return None
             if resp.status != 200:
                 text = await resp.text()
-                print('Error: %d - %s' % (resp.status, text))
+                logger.error('Error: %d - %s' % (resp.status, text))
             assert resp.status == 200
             return await resp.json()
 

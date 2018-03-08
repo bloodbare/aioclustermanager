@@ -1,7 +1,6 @@
 from aioclustermanager.job import Job
 from copy import deepcopy
 
-
 K8S_JOB = {
     "kind": "Job",
     "metadata": {
