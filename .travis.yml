@@ -51,6 +51,7 @@ script:
 
 after_success:
 - codecov
+- git describe --always --tags --long > VERSION
 
 deploy:
   provider: pypi
@@ -58,6 +59,5 @@ deploy:
   password:
     secure: n7SURGJ2syfXP4Sl6ilLdOgkC3SaeLOGQGau8GzUseDZVdgfMnvZbH7NkqxiTtypnt9p36pQRGbIsfzRI0xCcW2Id5jtRVKYUycsJFmeRESVZ4i35gUaCeiZ+djDvkXv+qealFeoTP4ihGS9HOLA5tqpKImAzk68VeobB0ywa3yZ40KFpYhQ2fAcR6PwjCNN7+N13DEx9ICwe9Y761hhJKTikX4bFVWwZw52DdKA+5trUarEHVxseKPCzCePxFQJ5yJWvlE+yAJwx0YizKcFAc9vSRWGCEn635wWlL7k5Al1zUrwDvBNsQN1StVy8/HYjT8qyC28SM4Pv4XSxWa1dYstNwoKi67/JP8aEChK1h8Lc+eD1y/RjZo8rt7zhzv6HZuhpjBxGr4gOjUqwRVkfAlc5NHhfFmEsDeRTzaOJ51lZPA6Pa1v+ZfiyqBqQ+VKgmwwG2dqq4YvRe/7Lt7jlrDg0zLkfEYMkHCPvuL3ff3mdggijDGgilzNs3XCUVdQLzXzz1iS2TIqUXVeYQi/e5aaFs9dxkDFa91i+YjQO5yqs2/nqIGCBSeAFw7i/Wr2iZP97HU5NgwOoV8RHbwPoP1B8bssL/KO5ukY+2uyHhYsy8VEN+rZsGnHeQhwwS3Gm2A9yhwq9GoXk4RbxyaE27QSj6sHK2H3IXJa/+gva80=
   on:
-    tags: true
-    distributions: sdist bdist_wheel
-    repo: onna/aioclustermanager
+    branch: master
+  distributions: sdist bdist_wheel
