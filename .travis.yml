@@ -52,6 +52,7 @@ script:
 after_success:
 - codecov
 - git describe --always --tags --long > VERSION
+- rm -rf *.egg-info
 
 deploy:
   provider: pypi
