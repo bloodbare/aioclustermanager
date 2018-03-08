@@ -34,9 +34,10 @@ before_script:
 - chmod +x nomad
 - sudo mv nomad /usr/local/bin
 - helm init
+- JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'; until kubectl get deploy -n kube-system -o jsonpath="$JSONPATH" 2>&1 | grep -q "tiller-deploy:Available=True"; do sleep 1; done
 - helm version
 - kubectl get pods --namespace kube-system
-- nomad agent -dev &
+- nomad agent -dev &  
 
 script:
 - flake8 aioclustermanager
