@@ -10,7 +10,8 @@ def load_reqs(filename):
             if not re.match('\s*#', line)
         ]
 
-version = open('VERSION').read()
+
+version = open('VERSION').read().rstrip('\n')
 requirements = load_reqs('requirements.txt')
 test_requirements = load_reqs('test-requirements.txt')
 
