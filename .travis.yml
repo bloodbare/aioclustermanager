@@ -48,7 +48,7 @@ before_script:
 - sleep 10
 - kubectl get pods --all-namespaces
 - nomad agent -dev &
-- git describe --always --tags --long > VERSION
+- echo $(git tag)-dev.$(git describe --always) > VERSION
 script:
 - flake8 aioclustermanager
 - py.test --cov=aioclustermanager --cov-report=xml aioclustermanager -s
