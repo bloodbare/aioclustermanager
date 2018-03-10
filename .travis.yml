@@ -55,6 +55,8 @@ script:
 after_success:
 - codecov
 - rm -rf *.egg-info
+before_deploy:
+- echo $(git tag)+$(git describe --always) > VERSION
 deploy:
   provider: pypi
   user: ramon.nb
