@@ -9,7 +9,7 @@ env:
 install:
 - pip install -r requirements.txt
 - pip install -r test-requirements.txt
-- echo $(git tag)$(git describe --always) > VERSION
+- echo $(git tag)+$(git describe --always) > VERSION
 - python setup.py develop
 before_script:
 - curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/v1.7.0/bin/linux/amd64/kubectl

@@ -7,3 +7,7 @@ pip-selfcheck.json
 *.egg-info
 *.whl
 *.tar.gz
+.coverage
+coverage.xml
+linux-amd64
+VERSION
