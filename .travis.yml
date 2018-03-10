@@ -55,9 +55,8 @@ script:
 after_success:
 - codecov
 - rm -rf *.egg-info
-before_deploy:
-- echo $(git tag)+$(git describe --always) > VERSION
 deploy:
+  skip_cleanup: true
   provider: pypi
   user: ramon.nb
   password:
