@@ -4,7 +4,6 @@ pytest==3.2.1
 tox==2.7.0
 docker
 Sphinx==1.6.3
-bumpversion==0.5.3
 coverage==4.4.1
 flake8-import-order==0.12
 flake8==3.4.1
