@@ -14,47 +14,48 @@ class Configuration:
     file = None
 
     def __init__(self, environment):
-        if self.environment['certificate'] is not None:
+        self.environment = environment
+        if environment['certificate'] is not None:
             # Certificate management
             ssl_client_context = ssl.create_default_context(
                 purpose=ssl.Purpose.CLIENT_AUTH)
             self.cert_file = tempfile.NamedTemporaryFile(delete=False)
-            self.cert_file.write(b64decode(self.environment['certificate']))
+            self.cert_file.write(b64decode(environment['certificate']))
             self.cert_file.close()
             self.client_key = tempfile.NamedTemporaryFile(delete=False)
-            self.client_key.write(b64decode(self.environment['key']))
+            self.client_key.write(b64decode(environment['key']))
             self.client_key.close()
 
             ssl_client_context.load_cert_chain(
                 certfile=self.cert_file.name, keyfile=self.client_key.name)
             conn = aiohttp.TCPConnector(ssl_context=ssl_client_context)
             self.session = aiohttp.ClientSession(connector=conn)
-        elif self.environment['certificate_file'] is not None:
+        elif environment['certificate_file'] is not None:
             logger.debug('Loading cert files')
             ssl_client_context = ssl.create_default_context(
                 purpose=ssl.Purpose.CLIENT_AUTH)
             ssl_client_context.load_cert_chain(
-                certfile=self.environment['certificate_file'],
-                keyfile=self.environment['key_file'])
+                certfile=environment['certificate_file'],
+                keyfile=environment['key_file'])
             conn = aiohttp.TCPConnector(ssl_context=ssl_client_context)
             self.session = aiohttp.ClientSession(connector=conn)
         else:
             basic_auth = aiohttp.BasicAuth(
-                self.environment['user'], self.environment['credentials'])
+                environment['user'], environment['credentials'])
             self.session = aiohttp.ClientSession(auth=basic_auth)
 
         ssl_context = None
-        if self.environment['ca'] is not None:
+        if environment['ca'] is not None:
             self.file = tempfile.NamedTemporaryFile(delete=False)
-            self.file.write(bytes(self.environment['ca'], encoding='utf-8'))
+            self.file.write(bytes(environment['ca'], encoding='utf-8'))
             self.file.close()
             self.ssl_context = ssl.SSLContext()
             ssl_context.load_verify_locations(self.file.name)
-        elif self.environment['ca_file'] is not None:
+        elif environment['ca_file'] is not None:
             self.ssl_context = ssl.SSLContext()
-            self.ssl_context.load_verify_locations(self.environment['ca_file'])
+            self.ssl_context.load_verify_locations(environment['ca_file'])
 
-        if self.environment['skip_ssl']:
+        if environment['skip_ssl']:
             self.verify = False
         else:
             self.verify = True
