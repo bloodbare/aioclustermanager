@@ -1,3 +1,4 @@
+from aioclustermanager.nomad import const
 from aioclustermanager.nomad.executions_list import NomadExecutionList
 from aioclustermanager.nomad.job import NomadJob
 from aioclustermanager.nomad.job_list import NomadJobList
@@ -32,6 +33,7 @@ DELETE_OPS = {
 
 class NomadCaller:
     _type = 'nomad'
+    constants = const
 
     def __init__(self, endpoint, datacenters, session):
         self.endpoint = endpoint
