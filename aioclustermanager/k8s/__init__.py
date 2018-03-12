@@ -10,18 +10,10 @@ import tempfile
 logger = logging.getLogger('aioclustermanager')
 
 
-class K8SContextManager(object):
+class Configuration:
+    file = None
+
     def __init__(self, environment):
-        self.environment = environment
-        self.session = None
-        self.file = None
-        self.cert_file = None
-        self.client_key = None
-
-    async def __aenter__(self):
-        return await self.open()
-
-    async def open(self):
         if self.environment['certificate'] is not None:
             # Certificate management
             ssl_client_context = ssl.create_default_context(
@@ -56,27 +48,43 @@ class K8SContextManager(object):
             self.file = tempfile.NamedTemporaryFile(delete=False)
             self.file.write(bytes(self.environment['ca'], encoding='utf-8'))
             self.file.close()
-            ssl_context = ssl.SSLContext()
+            self.ssl_context = ssl.SSLContext()
             ssl_context.load_verify_locations(self.file.name)
         elif self.environment['ca_file'] is not None:
-            ssl_context = ssl.SSLContext()
-            ssl_context.load_verify_locations(self.environment['ca_file'])
+            self.ssl_context = ssl.SSLContext()
+            self.ssl_context.load_verify_locations(self.environment['ca_file'])
 
         if self.environment['skip_ssl']:
-            verify = False
+            self.verify = False
         else:
-            verify = True
+            self.verify = True
 
+
+class K8SContextManager:
+    def __init__(self, environment):
+        self.environment = environment
+
+    async def __aenter__(self):
+        return await self.open()
+
+    async def open(self):
+        self.config = Configuration(self.environment)
         return K8SCaller(
-            ssl_context,
+            self.config.ssl_context,
             self.environment['endpoint'],
-            self.session,
-            verify=verify)
+            self.config.session,
+            verify=self.config.verify)
 
     async def __aexit__(self, exc_type, exc, tb):
-        await self.close()
+        if self.config.file is not None:
+            os.unlink(self.config.file.name)
+        await self.config.session.close()
 
-    async def close(self):
-        if self.file is not None:
-            os.unlink(self.file.name)
-        await self.session.close()
+
+async def create_k8s_caller(environment):
+    config = Configuration(environment)
+    return K8SCaller(
+        config.ssl_context,
+        environment['endpoint'],
+        config.session,
+        verify=config.verify)
