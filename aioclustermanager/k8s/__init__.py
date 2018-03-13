@@ -14,6 +14,7 @@ class Configuration:
     file = None
 
     def __init__(self, environment):
+        self.ssl_context = None
         self.environment = environment
         if environment['certificate'] is not None:
             # Certificate management
