@@ -18,4 +18,5 @@ class JobList:
     def schedulled_pods(self):
         for key, value in self.items():
             if len(value) > 0:
+                # XXX work with both nomad and k8s?
                 schedulled = list(filter(lambda x: x[0] == 'PodScheduled', value[0].events))  # noqa

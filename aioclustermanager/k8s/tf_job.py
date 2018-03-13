@@ -1,7 +1,6 @@
 from aioclustermanager.job import Job
 from copy import deepcopy
 
-
 K8S_JOB = {
     "kind": "TFJob",
     "metadata": {
@@ -22,6 +21,8 @@ K8S_JOB = {
                             }
                         }
                     }],
+                    # XXX are we sure we want to restart these jobs?
+                    # what if they restart continuously on bad code?
                     "restartPolicy": "OnFailure"
                 }
             }
@@ -67,6 +68,7 @@ class K8STFJob(Job):
         job_info = deepcopy(K8S_JOB)
         job_info['metadata']['name'] = name
         job_info['metadata']['namespace'] = namespace
+        # have to love the nesting here...
         job_info['spec']['replicaSpecs'][0]['template']['spec']['containers'][0]['name'] = name  # noqa
         job_info['spec']['replicaSpecs'][0]['template']['spec']['containers'][0]['image'] = image  # noqa
         job_info['spec']['replicaSpecs'][1]['template']['spec']['containers'][0]['name'] = name  # noqa

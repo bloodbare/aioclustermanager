@@ -1,0 +1,6 @@
+PENDING = 'pending'
+ERROR = 'failed'
+RUNNING = 'running'
+SUCCEEDED = 'complete'
+FAILED = 'failed'
+DEAD = 'dead'

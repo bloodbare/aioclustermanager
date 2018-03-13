@@ -1,6 +1,5 @@
-from copy import deepcopy
 from aioclustermanager.utils import generate_word
-
+from copy import deepcopy
 
 K8S_LIMITS = {
     "kind": "ResourceQuota",

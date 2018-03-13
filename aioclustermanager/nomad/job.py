@@ -1,6 +1,6 @@
-from copy import deepcopy
 from aioclustermanager.job import Job
-
+from aioclustermanager.nomad.const import DEAD
+from copy import deepcopy
 
 NOMAD_JOB = {
     "Job": {
@@ -44,11 +44,11 @@ class NomadJob(Job):
 
     @property
     def active(self):
-        return self._raw['Status'] != 'dead'
+        return self._raw['Status'] != DEAD
 
     @property
     def finished(self):
-        return self._raw['Status'] == 'dead'
+        return self._raw['Status'] == DEAD
 
     @property
     def status(self):

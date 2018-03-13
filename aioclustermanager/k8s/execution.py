@@ -1,25 +1,26 @@
 from aioclustermanager.execution import Execution
+from aioclustermanager.k8s.const import FAILED, PENDING, RUNNING
 
 
 class K8SExecution(Execution):
 
     @property
     def pending(self):
-        if self._raw['status']['phase'] == 'Pending':
+        if self._raw['status']['phase'] == PENDING:
             return True
         else:
             return False
 
     @property
     def running(self):
-        if self._raw['status']['phase'] == 'Running':
+        if self._raw['status']['phase'] == RUNNING:
             return True
         else:
             return False
 
     @property
     def failed(self):
-        if self._raw['status']['phase'] == 'Failed':
+        if self._raw['status']['phase'] == FAILED:
             return True
         else:
             return False

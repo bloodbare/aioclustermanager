@@ -1,9 +1,11 @@
-import logging
-import asyncio
-from aioclustermanager.nomad.job import NomadJob
+from aioclustermanager.nomad import const
 from aioclustermanager.nomad.executions_list import NomadExecutionList
+from aioclustermanager.nomad.job import NomadJob
 from aioclustermanager.nomad.job_list import NomadJobList
 from aioclustermanager.nomad.namespace import NomadNamespace
+
+import asyncio
+import logging
 
 # from aioclustermanager.utils import convert
 
@@ -29,12 +31,14 @@ DELETE_OPS = {
 }
 
 
-class NomadCaller(object):
+class NomadCaller:
+    _type = 'nomad'
+    constants = const
+
     def __init__(self, endpoint, datacenters, session):
         self.endpoint = endpoint
         self.session = session
         self.datacenters = datacenters
-        self._type = 'nomad'
 
     @property
     def type(self):
@@ -60,7 +64,7 @@ class NomadCaller(object):
             namespace=namespace,
             name=name,
             endpoint=self.endpoint)
-        return await self.watch(url, value='Started')
+        return await self.watch(url, value='Started')  # correct status?
 
     async def wait_deleted(self, kind, namespace, name=None):
         url = WATCH_OPS[kind]
@@ -70,7 +74,7 @@ class NomadCaller(object):
             namespace=namespace,
             name=name,
             endpoint=self.endpoint)
-        return await self.watch(url, value='Deleted')
+        return await self.watch(url, value='Deleted')  # correct status?
 
     async def define_quota(self, namespace, cpu_limit=None, mem_limit=None):
         # Only supported on nomad enterprise
@@ -195,7 +199,7 @@ class NomadCaller(object):
                 if alloc['TaskStates'] is not None:
                     for key, values in alloc['TaskStates'].items():
                         for event in values['Events']:
-                            # print("Status : " + event['Type'])
+                            logger.debug("Status : " + event['Type'])
                             if event['Type'] in [value]:
                                 not_found = False
                                 break

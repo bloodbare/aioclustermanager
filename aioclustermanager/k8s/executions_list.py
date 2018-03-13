@@ -1,4 +1,5 @@
 from aioclustermanager.executions_list import ExecutionList
+from aioclustermanager.k8s.const import FAILED, RUNNING, SUCCEEDED
 from aioclustermanager.k8s.execution import K8SExecution
 
 
@@ -13,18 +14,18 @@ class K8SExecutionList(ExecutionList):
 
     def has_failed_anytime(self):
         for execution in self:
-            if execution.status == 'Failed':
+            if execution.status == FAILED:
                 return True
         return False
 
     def is_running(self):
         for execution in self:
-            if execution.status == 'Running':
+            if execution.status == RUNNING:
                 return True
         return False
 
     def is_done(self):
         for execution in self:
-            if execution.status == 'Succeeded':
+            if execution.status == SUCCEEDED:
                 return True
         return False
