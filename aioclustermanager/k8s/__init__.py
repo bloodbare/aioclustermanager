@@ -78,6 +78,9 @@ class K8SContextManager:
             verify=self.config.verify)
 
     async def __aexit__(self, exc_type, exc, tb):
+        await self.close()
+
+    async def close(self):
         if self.config.file is not None:
             os.unlink(self.config.file.name)
         await self.config.session.close()
