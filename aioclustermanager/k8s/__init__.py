@@ -2,6 +2,7 @@ from aioclustermanager.k8s.caller import K8SCaller
 from base64 import b64decode
 
 import aiohttp
+import asyncio
 import logging
 import os
 import ssl
@@ -28,9 +29,13 @@ class Configuration:
     ssl_context = None
     cert_file = None
 
-    def __init__(self, environment):
+    def __init__(self, environment, loop=None):
         self.headers = {}
-        self.ssl_context = None
+        if loop is None:
+            self.loop = asyncio.get_event_loop()
+        else:
+            self.loop = loop
+
         self.environment = environment
 
         if environment.get('in_cluster'):
@@ -74,14 +79,14 @@ class Configuration:
 
     def load_skip_ssl(self):
         self.session = aiohttp.ClientSession(
-            connector=aiohttp.TCPConnector(verify_ssl=False),
-            headers=self.headers)
+            connector=aiohttp.TCPConnector(verify_ssl=False, loop=self.loop),
+            headers=self.headers, loop=self.loop)
 
     def load_basic_auth(self):
         basic_auth = aiohttp.BasicAuth(
             self.environment['user'], self.environment['credentials'])
         self.session = aiohttp.ClientSession(
-            auth=basic_auth, headers=self.headers)
+            auth=basic_auth, headers=self.headers, loop=self.loop)
 
     def load_certificate_file(self):
         logger.debug('Loading cert files')
@@ -94,9 +99,10 @@ class Configuration:
         else:
             ssl_client_context.load_cert_chain(
                 certfile=self.environment['certificate_file'])
-        conn = aiohttp.TCPConnector(ssl_context=ssl_client_context)
+        conn = aiohttp.TCPConnector(
+            ssl_context=ssl_client_context, loop=self.loop)
         self.session = aiohttp.ClientSession(
-            connector=conn, headers=self.headers)
+            connector=conn, headers=self.headers, loop=self.loop)
 
     def load_certificate(self):
         ssl_client_context = ssl.create_default_context(
@@ -110,20 +116,25 @@ class Configuration:
 
         ssl_client_context.load_cert_chain(
             certfile=self.cert_file.name, keyfile=self.client_key.name)
-        conn = aiohttp.TCPConnector(ssl_context=ssl_client_context)
+        conn = aiohttp.TCPConnector(
+            ssl_context=ssl_client_context, loop=self.loop)
         self.session = aiohttp.ClientSession(
-            connector=conn, headers=self.headers)
+            connector=conn, loop=self.loop, headers=self.headers)
 
 
 class K8SContextManager:
-    def __init__(self, environment):
+    def __init__(self, environment, loop=None):
         self.environment = environment
+        if loop is None:
+            self.loop = asyncio.get_current_loop()
+        else:
+            self.loop = loop
 
     async def __aenter__(self):
         return await self.open()
 
     async def open(self):
-        self.config = Configuration(self.environment)
+        self.config = Configuration(self.environment, self.loop)
         return K8SCaller(
             self.config.ssl_context,
             self.environment['endpoint'],

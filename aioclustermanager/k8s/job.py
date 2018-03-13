@@ -20,7 +20,8 @@ K8S_JOB = {
                         "resources": {
                             "limits": {
                             }
-                        }
+                        },
+                        "imagePullPolicy": "IfNotPresent"
                     }
                 ],
                 "restartPolicy": "Never"

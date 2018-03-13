@@ -4,13 +4,15 @@ import aiohttp
 
 
 class NomadContextManager:
-    def __init__(self, environment):
+    def __init__(self, environment, loop=None):
         self.environment = environment
+        if loop is None:
+            self.loop = asyncio.get_event_loop()
         self.session = None
         self._datacenter = None
 
     async def __aenter__(self):
-        self.session = aiohttp.ClientSession()
+        self.session = aiohttp.ClientSession(loop=self.loop)
 
         url = 'http://{}/v1/agent/self'.format(self.environment['endpoint'])
         async with self.session.get(url) as resp:
