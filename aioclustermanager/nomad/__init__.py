@@ -24,3 +24,17 @@ class NomadContextManager:
 
     async def __aexit__(self, exc_type, exc, tb):
         await self.session.close()
+
+
+async def create_nomad_caller(environment):
+    session = aiohttp.ClientSession()
+
+    url = 'http://{}/v1/agent/self'.format(environment['endpoint'])
+    async with session.get(url) as resp:
+        data = await resp.json()
+        datacenter = data['config']['Datacenter']
+
+    return NomadCaller(
+        environment['endpoint'],
+        datacenter,
+        session)
