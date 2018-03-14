@@ -16,7 +16,6 @@ SERVICE_CERT_FILENAME = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
 
 
 def _join_host_port(host, port):
-    """Pulled from kubernetes python package"""
     template = "%s:%s"
     host_requires_bracketing = ':' in host or '%' in host
     if host_requires_bracketing:
