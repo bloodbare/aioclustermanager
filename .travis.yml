@@ -9,7 +9,6 @@ env:
 install:
 - pip install -r requirements.txt
 - pip install -r test-requirements.txt
-- echo $(git describe --tags | cut -d '-' -f 1).post$(git describe --tags | cut -d '-' -f 2) > VERSION
 - python setup.py develop
 before_script:
 - curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/v1.7.0/bin/linux/amd64/kubectl
@@ -62,5 +61,5 @@ deploy:
   password:
     secure: ZVWg5NCM/sAQpQuuQ79WSZSpS3KafIxjbNxuys979D+O/f4nM0a2G+uP2wowFH7LGXqNDeMc50qassZQecoKAB4nzC0QhPppnZBLsgZj77fDi0AEQ0vu4znWxWldmN2cYyRgTgA/XC3TX1esXIykPz3zPpimjEUspiTb1LqZwAA5TtV+8w2BRJWIF2EbbfkXGrit50Z/6BIXE/bNoFLq7fVHaQZUoUUi28jg36EsoIjzICJ6FBEiC0qYOiQZjDy9xW+nBhyYqEWDd75dV8FhVPrmrykxw8erLqkfgKqh3NKFasp9L+79i2l2hZkYqDocdjxidWG/0c2iw4Kn3eyMWmF9R5i/JU9qDsmNc6iGDrV/lniu5/p1JZ03gHJ9LG7ZTabbg+2dpELa5RMXUgACL/hcuco685spcBsjw9NdhzfOPdYeH8R26UneB7fGvR5eLe5cPYdgFC29q0+lQFoo+Ld7hdVqlLZOih4/ciDtdHRJkkqU3mg2NdjOD8ZTyMBbtuoi6d52ubkn5C6Dr0YGSGNXLFPiFASUgMikIf5Hu2hyUaXpTK8x2fDvLhLExYm2nN9xcowVmJ28vP5HWRLFvJwzePcS1ykdTaaU5dtkft4GS1/tEy18DBeYtI7vdhXQF4ahYfBAjHVzlVLrmW+fGfNmFly95AGtBfIAsNwh5wk=
   on:
-    branch: master
+    tags: true
   distributions: sdist bdist_wheel

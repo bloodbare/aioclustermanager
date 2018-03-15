@@ -11,8 +11,6 @@ import yaml
 @pytest.fixture(scope='function')
 async def k8s_config():
     home = str(Path.home())
-    # Designed to run on docker desktop k8s support
-    # XXX DOES NOT CURRENTLY WORK WITH containers running in k8s already
     with open(home + '/.kube/config', 'r') as f:
         configuration = yaml.load(f)
 
@@ -74,11 +72,6 @@ async def nomad_config():
 async def kubernetes(k8s_config):
 
     async with K8SContextManager(k8s_config) as context:
-        # XXX context managers here feel very clumsy
-        # In another app, I have a single instance of a cluster manager
-        # that runs forever. Needing the configuration of the manager to
-        # be in a context manager makes this clumsy.
-        # see changes in the __init__.py for another approach
         cm = ClusterManager(context)
         await cm.delete_namespace('aiocluster-test')
         await cm.create_namespace('aiocluster-test')
@@ -90,7 +83,6 @@ async def kubernetes(k8s_config):
 async def nomad(nomad_config):
 
     async with NomadContextManager(nomad_config) as context:
-        # XXX context managers here feel very clumsy
         cm = ClusterManager(context)
         await cm.delete_namespace('aiocluster-test')
         await cm.create_namespace('aiocluster-test')

@@ -15,6 +15,11 @@ version = open('VERSION').read().rstrip('\n')
 requirements = load_reqs('requirements.txt')
 test_requirements = load_reqs('test-requirements.txt')
 
+try:
+    README = open('README.rst').read() + '\n\n' + open('CHANGELOG.rst').read()
+except IOError:
+    README = None
+
 setup(
     name='aioclustermanager',
     version=version,

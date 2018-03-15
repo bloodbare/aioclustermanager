@@ -10,4 +10,3 @@ pip-selfcheck.json
 .coverage
 coverage.xml
 linux-amd64
-VERSION
