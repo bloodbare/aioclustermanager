@@ -28,7 +28,3 @@ class Job:
 
     def payload(self):
         return self._raw
-
-    @property
-    def finished(self):
-        raise NotImplementedError()

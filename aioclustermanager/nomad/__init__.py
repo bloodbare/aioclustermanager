@@ -1,6 +1,7 @@
 from aioclustermanager.nomad.caller import NomadCaller
 
 import aiohttp
+import asyncio
 
 
 class NomadContextManager:
