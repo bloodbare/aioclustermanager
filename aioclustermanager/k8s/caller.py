@@ -275,7 +275,7 @@ class K8SCaller(object):
                 timeout=timeout) as resp:
             assert resp.status == 200
             while True:
-                data, end_of_http = await resp.content.readchunk()
+                data, end_of_http = await resp.content.readline()
                 yield data
 
     async def watch(self, url, value=None, timeout=20):
