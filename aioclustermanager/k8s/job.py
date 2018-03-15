@@ -86,9 +86,9 @@ class K8SJob(Job):
         if 'envFrom' in kw and kw['envFrom'] is not None:
             job_info['spec']['template']['spec']['containers'][0]['envFrom'] = kw['envFrom']  # noqa
 
-        if 'envs' in kw and kw['envs'] is not None:
+        if 'envvars' in kw and kw['envvars'] is not None:
             envlist = []
-            for key, value in kw['envs']:
+            for key, value in kw['envvars']:
                 envlist.append({
                     "name": key,
                     "value": value

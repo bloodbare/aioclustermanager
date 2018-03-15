@@ -130,8 +130,8 @@ class NomadJob(Job):
         if 'mem_limit' in kw and kw['mem_limit'] is not None:
             job_info['Job']['TaskGroups'][0]['Tasks'][0]['Resources']['MemoryMB'] = kw['mem_limit']  # noqa
 
-        if 'envs' in kw and kw['envs'] is not None:
-            job_info['Job']['TaskGroups'][0]['Tasks'][0]['Env'] = kw['envs']  # noqa
+        if 'envvars' in kw and kw['envvars'] is not None:
+            job_info['Job']['TaskGroups'][0]['Tasks'][0]['Env'] = kw['envvars']  # noqa
 
         if 'datacenters' in kw and kw['datacenters'] is not None:
             job_info['Job']['Datacenters'] = kw['datacenters']
