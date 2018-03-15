@@ -88,7 +88,7 @@ class K8SJob(Job):
 
         if 'envvars' in kw and kw['envvars'] is not None:
             envlist = []
-            for key, value in kw['envvars']:
+            for key, value in kw['envvars'].items():
                 envlist.append({
                     "name": key,
                     "value": value
