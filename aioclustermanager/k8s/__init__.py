@@ -126,7 +126,7 @@ class K8SContextManager:
     def __init__(self, environment, loop=None):
         self.environment = environment
         if loop is None:
-            self.loop = asyncio.get_current_loop()
+            self.loop = asyncio.get_event_loop()
         else:
             self.loop = loop
 
