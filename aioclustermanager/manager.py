@@ -38,7 +38,8 @@ class ClusterManager:
             self, namespace, name, image,
             command=None, args=None,
             cpu_limit=None, mem_limit=None,
-            envvars={},
+            envvars={}, volumes=None, volumeMounts=None,
+            envFrom=None, entrypoint=None,
             delete=False):
         exist = await self.caller.get_job(namespace, name)
         if exist is not None and delete:
@@ -50,7 +51,8 @@ class ClusterManager:
                 namespace, name, image,
                 command=command, args=args,
                 cpu_limit=cpu_limit, mem_limit=mem_limit,
-                envvars=envvars)
+                envvars=envvars, volumes=volumes, volumeMounts=volumeMounts,
+                envFrom=envFrom, entrypoint=entrypoint)
             await self.caller.wait_added('job', namespace, name=name)
             return True
         return False

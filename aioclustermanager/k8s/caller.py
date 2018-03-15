@@ -211,7 +211,8 @@ class K8SCaller(object):
             self, namespace, name, image,
             command=None, args=None,
             cpu_limit=None, mem_limit=None,
-            envvars={}):
+            envvars={}, volumes=None, volumeMounts=None,
+            envFrom=None, entrypoint=None):
         url, version = POST_OPS['job']
         url = url.format(
             namespace=namespace,
@@ -223,7 +224,8 @@ class K8SCaller(object):
             image=image,
             command=command, args=args,
             cpu_limit=cpu_limit, mem_limit=mem_limit,
-            envvars=envvars)
+            envvars=envvars, volumes=volumes, volumeMounts=volumeMounts,
+            envFrom=envFrom, entrypoint=entrypoint)
         return await self.post(url, version, obj.payload())
 
     async def create_tfjob(
@@ -231,7 +233,8 @@ class K8SCaller(object):
             command=None, args=None,
             cpu_limit=None, mem_limit=None,
             envvars={}, workers=1, ps=1,
-            masters=1, tb_gs=None):
+            masters=1, tb_gs=None, volumes=None, volumeMounts=None,
+            envFrom=None, entrypoint=None):
         url, version = POST_OPS['tfjob']
         url = url.format(
             namespace=namespace,
@@ -244,7 +247,8 @@ class K8SCaller(object):
             command=command, args=args,
             cpu_limit=cpu_limit, mem_limit=mem_limit,
             envvars=envvars, workers=workers,
-            ps=ps, masters=masters, tb_gs=tb_gs)
+            ps=ps, masters=masters, tb_gs=tb_gs, volumes=volumes,
+            volumeMounts=volumeMounts, envFrom=envFrom, entrypoint=entrypoint)
         return await self.post(url, version, obj.payload())
 
     async def wait_for_job(self, namespace, name):

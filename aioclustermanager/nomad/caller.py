@@ -149,7 +149,8 @@ class NomadCaller:
             self, namespace, name, image,
             command=None, args=None,
             cpu_limit=None, mem_limit=None,
-            envvars={}):
+            envvars={}, volumes=None, volumeMounts=None,
+            envFrom=None, entrypoint=None):
         url = POST_OPS['job']
         url = url.format(
             namespace=namespace,
@@ -161,7 +162,8 @@ class NomadCaller:
             image=image,
             command=command, args=args,
             cpu_limit=cpu_limit, mem_limit=mem_limit,
-            envvars=envvars)
+            envvars=envvars, volumes=volumes, volumeMounts=volumeMounts,
+            envFrom=envFrom, entrypoint=entrypoint)
         obj._namespace = namespace
         obj.set_datacenters([self.datacenters])
         return await self.post(url, None, obj.payload())
