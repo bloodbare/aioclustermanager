@@ -31,6 +31,15 @@ async def test_get_jobs_nomad(nomad):
     job_info = await nomad.get_job('aiocluster-test', 'test-job')
     assert job_info.id == 'test-job'
 
+    executions = await nomad.list_job_executions(
+        'aiocluster-test', 'test-job')
+    assert len(executions) > 0
+
+    # Testing does not work on local nomad
+    # log = await nomad.get_execution_log(
+    #     'aiocluster-test', 'test-job', executions[0].internal_id)
+    # assert "3.14" in log
+
     result = await nomad.delete_job('aiocluster-test', 'test-job')
     assert result is True
 

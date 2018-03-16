@@ -19,7 +19,8 @@ WATCH_OPS = {
 GET_OPS = {
     'list_jobs': 'http://{endpoint}/v1/jobs',
     'job': 'http://{endpoint}/v1/job/{namespace}-{name}',
-    'executions': 'http://{endpoint}/v1/job/{namespace}-{name}/allocations'
+    'executions': 'http://{endpoint}/v1/job/{namespace}-{name}/allocations',
+    'log': 'http://{endpoint}/v1/client/fs/logs/{name}'
 }
 
 POST_OPS = {
@@ -112,6 +113,38 @@ class NomadCaller:
         else:
             return NomadExecutionList(data=result)
 
+    async def get_execution_log(self, namespace, job_id, execution_id):
+        url = GET_OPS['log']
+        url = url.format(
+            namespace=namespace,
+            name=execution_id,
+            endpoint=self.endpoint)
+        params = {
+            'plain': 'true',
+            'type': 'stdout',
+            'task': namespace + '-' + job_id
+        }
+        result = await self.get(url, params)
+        if result is None:
+            return None
+        else:
+            return result
+
+    async def get_execution_log_watch(self, namespace, job_id, execution_id):
+        url = GET_OPS['log']
+        url = url.format(
+            namespace=namespace,
+            name=execution_id,
+            endpoint=self.endpoint)
+        params = {
+            'plain': 'true',
+            'type': 'stdout',
+            'task': namespace + '-' + job_id,
+            'follow': 'true'
+        }
+        async for logline in await self._watch_log(url, params, timeout=3660):
+            yield logline
+
     async def delete_job(self, namespace, name, wait=False):
         url = DELETE_OPS['job']
         url = url.format(
@@ -191,6 +224,16 @@ class NomadCaller:
         return 1 if executions.is_done() else 0
 
     # BASIC OPS
+
+    async def _watch_log(self, url, params, timeout=20):
+        async with self.session.get(
+                url,
+                params=params,
+                timeout=timeout) as resp:
+            assert resp.status == 200
+            while True:
+                data = await resp.content.readline()
+                yield data
 
     async def watch(self, url, value=None, timeout=20):
         not_found = True

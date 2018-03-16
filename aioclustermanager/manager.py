@@ -87,6 +87,15 @@ class ClusterManager:
     async def list_job_executions(self, namespace, job_id):
         return await self.caller.get_job_executions(namespace, job_id)
 
+    async def get_execution_log(self, namespace, job_id, execution_id):
+        return await self.caller.get_execution_log(
+            namespace, job_id, execution_id)
+
+    async def get_execution_log_watch(self, namespace, job_id, execution_id):
+        async for log_line in self.caller.get_execution_log_watch(
+                namespace, job_id, execution_id):
+            yield log_line
+
     async def wait_for_job_execution_status(self, namespace, name):
         status = self._const.PENDING
         while status not in [self._const.RUNNING, self._const.ERROR,

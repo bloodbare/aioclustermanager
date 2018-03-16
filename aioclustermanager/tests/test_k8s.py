@@ -32,6 +32,14 @@ async def test_get_jobs_k8s(kubernetes):
     assert job_info.finished
     assert job_info.id == 'test-job'
 
+    executions = await kubernetes.list_job_executions(
+        'aiocluster-test', 'test-job')
+    assert len(executions) > 0
+
+    log = await kubernetes.get_execution_log(
+        'aiocluster-test', 'test-job', executions[0].internal_id)
+    assert "3.14" in log
+
     result = await kubernetes.delete_job('aiocluster-test', 'test-job')
     assert result is True
 

@@ -46,3 +46,7 @@ class NomadExecution(Execution):
     @property
     def id(self):
         return self._raw['JobID']
+
+    @property
+    def internal_id(self):
+        return self._raw['ID']
