@@ -8,6 +8,7 @@ K8S_JOB = {
         "namespace": ""
     },
     "spec": {
+        "backoffLimit": 1,
         "template": {
             "metadata": {
                 "name": ""

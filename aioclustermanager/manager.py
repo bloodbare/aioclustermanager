@@ -30,6 +30,9 @@ class ClusterManager:
             return True
         return False
 
+    async def get_nodes(self):
+        return await self.caller.get_nodes()
+
     async def define_quota(self, name, cpu_limit=None, mem_limit=None):
         await self.caller.define_quota(name, cpu_limit, mem_limit)
         return True

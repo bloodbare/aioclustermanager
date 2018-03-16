@@ -4,6 +4,9 @@ pytestmark = pytest.mark.asyncio
 
 async def test_get_jobs_nomad(nomad):
     # We clean up all the jobs on the namespace
+    result = await nomad.get_nodes()
+    assert len(result) > 0
+
     result = await nomad.cleanup_jobs('aiocluster-test')
     assert result == 0
 

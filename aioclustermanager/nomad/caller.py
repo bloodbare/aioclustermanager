@@ -3,6 +3,7 @@ from aioclustermanager.nomad.executions_list import NomadExecutionList
 from aioclustermanager.nomad.job import NomadJob
 from aioclustermanager.nomad.job_list import NomadJobList
 from aioclustermanager.nomad.namespace import NomadNamespace
+from aioclustermanager.nomad.node_list import NomadNodeList
 
 import asyncio
 import logging
@@ -20,7 +21,8 @@ GET_OPS = {
     'list_jobs': 'http://{endpoint}/v1/jobs',
     'job': 'http://{endpoint}/v1/job/{namespace}-{name}',
     'executions': 'http://{endpoint}/v1/job/{namespace}-{name}/allocations',
-    'log': 'http://{endpoint}/v1/client/fs/logs/{name}'
+    'log': 'http://{endpoint}/v1/client/fs/logs/{name}',
+    'nodes': 'http://{endpoint}/v1/nodes'
 }
 
 POST_OPS = {
@@ -58,6 +60,16 @@ class NomadCaller:
         for job in jobs:
             await self.delete_job(namespace, job.id)
         return True
+
+    async def get_nodes(self):
+        url = GET_OPS['nodes']
+        url = url.format(
+            endpoint=self.endpoint)
+        result = await self.get(url, {})
+        if result is None:
+            return None
+        else:
+            return NomadNodeList(data=result)
 
     async def wait_added(self, kind, namespace, name=None):
         url = WATCH_OPS[kind]

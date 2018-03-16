@@ -7,6 +7,7 @@ from aioclustermanager.k8s.namespace import K8SNamespace
 from aioclustermanager.k8s.quota import K8SQuota
 from aioclustermanager.k8s.tf_job import K8STFJob
 from aioclustermanager.k8s.tf_job_list import K8STFJobList
+from aioclustermanager.k8s.node_list import K8SNodeList
 
 import concurrent
 import json
@@ -35,7 +36,9 @@ GET_OPS = {
     'list_tfjobs':
         'https://{endpoint}/apis/kubeflow.org/v1alpha1/namespaces/{namespace}/tfjobs',  # noqa
     'log':
-        'https://{endpoint}/api/v1/namespaces/{namespace}/pods/{name}/log'
+        'https://{endpoint}/api/v1/namespaces/{namespace}/pods/{name}/log',
+    'nodes':
+        'https://{endpoint}/api/v1/nodes/'
 }
 
 POST_OPS = {
@@ -126,6 +129,16 @@ class K8SCaller(object):
             max_cpu=cpu_limit,
             max_memory=mem_limit)
         return await self.post(url, version, obj.payload())
+
+    async def get_nodes(self):
+        url = GET_OPS['nodes']
+        url = url.format(
+            endpoint=self.endpoint)
+        result = await self.get(url)
+        if result is None:
+            return None
+        else:
+            return K8SNodeList(data=result)
 
     async def get_job(self, namespace, name):
         url = GET_OPS['job']

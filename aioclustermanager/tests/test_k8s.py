@@ -6,6 +6,9 @@ pytestmark = pytest.mark.asyncio
 async def test_get_jobs_k8s(kubernetes):
     # We clean up all the jobs on the namespace
 
+    result = await kubernetes.get_nodes()
+    assert len(result) > 0
+
     result = await kubernetes.cleanup_jobs('aiocluster-test')
     assert result == 0
 
