@@ -263,7 +263,7 @@ class NomadCaller:
                 if not_found is False:
                     break
             if not_found is True:
-                await asyncio.sleep(5)
+                await asyncio.sleep(1)
 
     async def get(self, url, params):
         async with self.session.get(
