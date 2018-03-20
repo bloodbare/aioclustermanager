@@ -77,7 +77,7 @@ class NomadCaller:
             namespace=namespace,
             name=name,
             endpoint=self.endpoint)
-        return await self.watch(url, not_value=['dead', 'complete', 'pending'])
+        return await self.watch(url, not_value=['pending'])
 
     async def wait_deleted(self, kind, namespace, name=None):
         url = WATCH_OPS[kind]
@@ -228,7 +228,7 @@ class NomadCaller:
             namespace=namespace,
             name=name,
             endpoint=self.endpoint)
-        await self.watch(url, 'Terminated')
+        await self.watch(url, value=['dead', 'complete'])
         job = await self.get_job(namespace, name)
         if not job.finished:
             raise Exception('Not finished')
