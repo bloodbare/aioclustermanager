@@ -7,6 +7,7 @@ from aioclustermanager.k8s.namespace import K8SNamespace
 from aioclustermanager.k8s.quota import K8SQuota
 from aioclustermanager.k8s.tf_job import K8STFJob
 from aioclustermanager.k8s.tf_job_list import K8STFJobList
+from aioclustermanager.k8s.node_list import K8SNodeList
 
 import concurrent
 import json
@@ -33,7 +34,11 @@ GET_OPS = {
     'tfjob':
         'https://{endpoint}/apis/kubeflow.org/v1alpha1/namespaces/{namespace}/tfjobs/{name}',  # noqa
     'list_tfjobs':
-        'https://{endpoint}/apis/kubeflow.org/v1alpha1/namespaces/{namespace}/tfjobs'  # noqa
+        'https://{endpoint}/apis/kubeflow.org/v1alpha1/namespaces/{namespace}/tfjobs',  # noqa
+    'log':
+        'https://{endpoint}/api/v1/namespaces/{namespace}/pods/{name}/log',
+    'nodes':
+        'https://{endpoint}/api/v1/nodes/'
 }
 
 POST_OPS = {
@@ -125,6 +130,16 @@ class K8SCaller(object):
             max_memory=mem_limit)
         return await self.post(url, version, obj.payload())
 
+    async def get_nodes(self):
+        url = GET_OPS['nodes']
+        url = url.format(
+            endpoint=self.endpoint)
+        result = await self.get(url)
+        if result is None:
+            return None
+        else:
+            return K8SNodeList(data=result)
+
     async def get_job(self, namespace, name):
         url = GET_OPS['job']
         url = url.format(
@@ -160,6 +175,27 @@ class K8SCaller(object):
             return None
         else:
             return K8SExecutionList(data=result)
+
+    async def get_execution_log(self, namespace, job_id, execution_id):
+        url = GET_OPS['log']
+        url = url.format(
+            namespace=namespace,
+            name=execution_id,
+            endpoint=self.endpoint)
+        result = await self.get(url, noaccept=True)
+        if result is None:
+            return None
+        else:
+            return result
+
+    async def get_execution_log_watch(self, namespace, job_id, execution_id):
+        url = GET_OPS['log']
+        url = url.format(
+            namespace=namespace,
+            name=execution_id,
+            endpoint=self.endpoint)
+        async for logline in await self._watch_log(url, timeout=3660):
+            yield logline
 
     async def delete_job(self, namespace, name, wait=False):
         url, version = DELETE_OPS['job']
@@ -211,7 +247,8 @@ class K8SCaller(object):
             self, namespace, name, image,
             command=None, args=None,
             cpu_limit=None, mem_limit=None,
-            envvars={}):
+            envvars={}, volumes=None, volumeMounts=None,
+            envFrom=None, entrypoint=None):
         url, version = POST_OPS['job']
         url = url.format(
             namespace=namespace,
@@ -223,7 +260,8 @@ class K8SCaller(object):
             image=image,
             command=command, args=args,
             cpu_limit=cpu_limit, mem_limit=mem_limit,
-            envvars=envvars)
+            envvars=envvars, volumes=volumes, volumeMounts=volumeMounts,
+            envFrom=envFrom, entrypoint=entrypoint)
         return await self.post(url, version, obj.payload())
 
     async def create_tfjob(
@@ -231,7 +269,8 @@ class K8SCaller(object):
             command=None, args=None,
             cpu_limit=None, mem_limit=None,
             envvars={}, workers=1, ps=1,
-            masters=1, tb_gs=None):
+            masters=1, tb_gs=None, volumes=None, volumeMounts=None,
+            envFrom=None, entrypoint=None):
         url, version = POST_OPS['tfjob']
         url = url.format(
             namespace=namespace,
@@ -244,7 +283,8 @@ class K8SCaller(object):
             command=command, args=args,
             cpu_limit=cpu_limit, mem_limit=mem_limit,
             envvars=envvars, workers=workers,
-            ps=ps, masters=masters, tb_gs=tb_gs)
+            ps=ps, masters=masters, tb_gs=tb_gs, volumes=volumes,
+            volumeMounts=volumeMounts, envFrom=envFrom, entrypoint=entrypoint)
         return await self.post(url, version, obj.payload())
 
     async def wait_for_job(self, namespace, name):
@@ -275,7 +315,18 @@ class K8SCaller(object):
                 timeout=timeout) as resp:
             assert resp.status == 200
             while True:
-                data, end_of_http = await resp.content.readchunk()
+                data = await resp.content.readline()
+                yield data
+
+    async def _watch_log(self, url, timeout=20):
+        async with self.session.get(
+                url + '?follow=true',
+                ssl_context=self.ssl_context,
+                verify_ssl=self.verify,
+                timeout=timeout) as resp:
+            assert resp.status == 200
+            while True:
+                data = await resp.content.readline()
                 yield data
 
     async def watch(self, url, value=None, timeout=20):
@@ -287,12 +338,13 @@ class K8SCaller(object):
         except concurrent.futures._base.TimeoutError:
             pass
 
-    async def get(self, url):
+    async def get(self, url, noaccept=False):
+        headers = {}
+        if noaccept is False:
+            headers['Accept'] = 'application/json'
         async with self.session.get(
                 url,
-                headers={
-                    'Accept': 'application/json'
-                },
+                headers=headers,
                 ssl_context=self.ssl_context,
                 verify_ssl=self.verify) as resp:
             if resp.status == 404:
@@ -301,7 +353,10 @@ class K8SCaller(object):
                 text = await resp.text()
                 logger.error('Error: %d - %s' % (resp.status, text))
             assert resp.status == 200
-            return await resp.json()
+            if noaccept:
+                return await resp.text()
+            else:
+                return await resp.json()
 
     async def post(self, url, version, payload):
         payload['apiVersion'] = version

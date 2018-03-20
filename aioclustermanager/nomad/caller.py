@@ -3,6 +3,7 @@ from aioclustermanager.nomad.executions_list import NomadExecutionList
 from aioclustermanager.nomad.job import NomadJob
 from aioclustermanager.nomad.job_list import NomadJobList
 from aioclustermanager.nomad.namespace import NomadNamespace
+from aioclustermanager.nomad.node_list import NomadNodeList
 
 import asyncio
 import logging
@@ -19,7 +20,9 @@ WATCH_OPS = {
 GET_OPS = {
     'list_jobs': 'http://{endpoint}/v1/jobs',
     'job': 'http://{endpoint}/v1/job/{namespace}-{name}',
-    'executions': 'http://{endpoint}/v1/job/{namespace}-{name}/allocations'
+    'executions': 'http://{endpoint}/v1/job/{namespace}-{name}/allocations',
+    'log': 'http://{endpoint}/v1/client/fs/logs/{name}',
+    'nodes': 'http://{endpoint}/v1/nodes'
 }
 
 POST_OPS = {
@@ -57,6 +60,16 @@ class NomadCaller:
         for job in jobs:
             await self.delete_job(namespace, job.id)
         return True
+
+    async def get_nodes(self):
+        url = GET_OPS['nodes']
+        url = url.format(
+            endpoint=self.endpoint)
+        result = await self.get(url, {})
+        if result is None:
+            return None
+        else:
+            return NomadNodeList(data=result)
 
     async def wait_added(self, kind, namespace, name=None):
         url = WATCH_OPS[kind]
@@ -112,6 +125,38 @@ class NomadCaller:
         else:
             return NomadExecutionList(data=result)
 
+    async def get_execution_log(self, namespace, job_id, execution_id):
+        url = GET_OPS['log']
+        url = url.format(
+            namespace=namespace,
+            name=execution_id,
+            endpoint=self.endpoint)
+        params = {
+            'plain': 'true',
+            'type': 'stdout',
+            'task': namespace + '-' + job_id
+        }
+        result = await self.get(url, params)
+        if result is None:
+            return None
+        else:
+            return result
+
+    async def get_execution_log_watch(self, namespace, job_id, execution_id):
+        url = GET_OPS['log']
+        url = url.format(
+            namespace=namespace,
+            name=execution_id,
+            endpoint=self.endpoint)
+        params = {
+            'plain': 'true',
+            'type': 'stdout',
+            'task': namespace + '-' + job_id,
+            'follow': 'true'
+        }
+        async for logline in await self._watch_log(url, params, timeout=3660):
+            yield logline
+
     async def delete_job(self, namespace, name, wait=False):
         url = DELETE_OPS['job']
         url = url.format(
@@ -149,7 +194,8 @@ class NomadCaller:
             self, namespace, name, image,
             command=None, args=None,
             cpu_limit=None, mem_limit=None,
-            envvars={}):
+            envvars={}, volumes=None, volumeMounts=None,
+            envFrom=None, entrypoint=None):
         url = POST_OPS['job']
         url = url.format(
             namespace=namespace,
@@ -161,7 +207,8 @@ class NomadCaller:
             image=image,
             command=command, args=args,
             cpu_limit=cpu_limit, mem_limit=mem_limit,
-            envvars=envvars)
+            envvars=envvars, volumes=volumes, volumeMounts=volumeMounts,
+            envFrom=envFrom, entrypoint=entrypoint)
         obj._namespace = namespace
         obj.set_datacenters([self.datacenters])
         return await self.post(url, None, obj.payload())
@@ -189,6 +236,16 @@ class NomadCaller:
         return 1 if executions.is_done() else 0
 
     # BASIC OPS
+
+    async def _watch_log(self, url, params, timeout=20):
+        async with self.session.get(
+                url,
+                params=params,
+                timeout=timeout) as resp:
+            assert resp.status == 200
+            while True:
+                data = await resp.content.readline()
+                yield data
 
     async def watch(self, url, value=None, timeout=20):
         not_found = True

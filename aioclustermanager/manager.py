@@ -30,6 +30,9 @@ class ClusterManager:
             return True
         return False
 
+    async def get_nodes(self):
+        return await self.caller.get_nodes()
+
     async def define_quota(self, name, cpu_limit=None, mem_limit=None):
         await self.caller.define_quota(name, cpu_limit, mem_limit)
         return True
@@ -38,7 +41,8 @@ class ClusterManager:
             self, namespace, name, image,
             command=None, args=None,
             cpu_limit=None, mem_limit=None,
-            envvars={},
+            envvars={}, volumes=None, volumeMounts=None,
+            envFrom=None, entrypoint=None,
             delete=False):
         exist = await self.caller.get_job(namespace, name)
         if exist is not None and delete:
@@ -50,7 +54,8 @@ class ClusterManager:
                 namespace, name, image,
                 command=command, args=args,
                 cpu_limit=cpu_limit, mem_limit=mem_limit,
-                envvars=envvars)
+                envvars=envvars, volumes=volumes, volumeMounts=volumeMounts,
+                envFrom=envFrom, entrypoint=entrypoint)
             await self.caller.wait_added('job', namespace, name=name)
             return True
         return False
@@ -84,6 +89,15 @@ class ClusterManager:
 
     async def list_job_executions(self, namespace, job_id):
         return await self.caller.get_job_executions(namespace, job_id)
+
+    async def get_execution_log(self, namespace, job_id, execution_id):
+        return await self.caller.get_execution_log(
+            namespace, job_id, execution_id)
+
+    async def get_execution_log_watch(self, namespace, job_id, execution_id):
+        async for log_line in self.caller.get_execution_log_watch(
+                namespace, job_id, execution_id):
+            yield log_line
 
     async def wait_for_job_execution_status(self, namespace, name):
         status = self._const.PENDING
