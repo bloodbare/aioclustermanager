@@ -12,6 +12,7 @@ logger = logging.getLogger('aioclustermanager')
 
 SERVICE_HOST_ENV_NAME = "KUBERNETES_SERVICE_HOST"
 SERVICE_PORT_ENV_NAME = "KUBERNETES_SERVICE_PORT"
+SERVICE_TOKEN_ENV_NAME = "KUBERNETES_SERVICE_TOKEN"
 SERVICE_TOKEN_FILENAME = "/var/run/secrets/kubernetes.io/serviceaccount/token"
 SERVICE_CERT_FILENAME = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
 
@@ -39,8 +40,11 @@ class Configuration:
         self.environment = environment
 
         if environment.get('in_cluster'):
-            with open(SERVICE_TOKEN_FILENAME) as fi:
-                token = fi.read()
+            if SERVICE_TOKEN_ENV_NAME in os.environ:
+                token = os.environ[SERVICE_TOKEN_ENV_NAME]
+            else:
+                with open(SERVICE_TOKEN_FILENAME) as fi:
+                    token = fi.read()
             self.headers = {
                 'Authorization': 'Bearer ' + token
             }
