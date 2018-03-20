@@ -71,13 +71,13 @@ class NomadCaller:
         else:
             return NomadNodeList(data=result)
 
-    async def wait_added(self, kind, namespace, name=None):
+    async def wait_added(self, kind, namespace, name=None, timeout=30):
         url = WATCH_OPS[kind]
         url = url.format(
             namespace=namespace,
             name=name,
             endpoint=self.endpoint)
-        return await self.watch(url, not_value=['pending'])
+        return await self.watch(url, not_value=['pending'], timeout=timeout)
 
     async def wait_deleted(self, kind, namespace, name=None):
         url = WATCH_OPS[kind]
@@ -247,23 +247,23 @@ class NomadCaller:
                 data = await resp.content.readline()
                 yield data
 
-    async def watch(self, url, value=None, not_value=None, timeout=20):
+    async def watch(self, url, value=None, not_value=None, timeout=30):
         return await asyncio.wait_for(
             self._watch(url, value, not_value), timeout)
 
     async def _watch(self, url, value=None, not_value=None):
-        if value and not isinstance(value, list):
+        if value is not None and not isinstance(value, list):
             value = [value]
-        if not_value and not isinstance(not_value, list):
+        if not_value is not None and not isinstance(not_value, list):
             not_value = [not_value]
 
         not_found = True
         while not_found:
             job = await self.get(url, {})
             if job is not None:
-                if not_value:
-                    not_found = job['Status'] not in not_value
-                elif value:
+                if not_value is not None:
+                    not_found = job['Status'] in not_value
+                elif value is not None:
                     not_found = job['Status'] not in value
             if not_found is True:
                 await asyncio.sleep(1)

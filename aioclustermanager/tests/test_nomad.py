@@ -18,7 +18,8 @@ async def test_get_jobs_nomad(nomad):
         'aiocluster-test',
         'test-job',
         'perl',
-        command=["perl", "-Mbignum=bpi", "-wle", "print bpi(2000)"])
+        command=["perl", "-Mbignum=bpi", "-wle", "print bpi(2000)"],
+        timeout=45)
 
     job_info = await nomad.get_job('aiocluster-test', 'test-job')
     assert job_info.id == 'test-job'
