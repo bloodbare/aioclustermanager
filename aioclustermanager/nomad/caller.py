@@ -13,7 +13,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 WATCH_OPS = {
-    'job': 'http://{endpoint}/v1/job/{namespace}-{name}/allocations',
+    'job': 'http://{endpoint}/v1/job/{namespace}-{name}',
     'namespace': None
 }
 
@@ -77,7 +77,7 @@ class NomadCaller:
             namespace=namespace,
             name=name,
             endpoint=self.endpoint)
-        return await self.watch(url, value='Started')  # correct status?
+        return await self.watch(url, not_value=['dead', 'complete', 'pending'])
 
     async def wait_deleted(self, kind, namespace, name=None):
         url = WATCH_OPS[kind]
@@ -87,7 +87,7 @@ class NomadCaller:
             namespace=namespace,
             name=name,
             endpoint=self.endpoint)
-        return await self.watch(url, value='Deleted')  # correct status?
+        return await self.watch(url, value=['dead', 'complete'])
 
     async def define_quota(self, namespace, cpu_limit=None, mem_limit=None):
         # Only supported on nomad enterprise
@@ -247,23 +247,27 @@ class NomadCaller:
                 data = await resp.content.readline()
                 yield data
 
-    async def watch(self, url, value=None, timeout=20):
+    async def watch(self, url, value=None, not_value=None, timeout=20):
+        return await asyncio.wait_for(
+            self._watch(url, value, not_value), timeout)
+
+    async def _watch(self, url, value=None, not_value=None):
+        if value and not isinstance(value, list):
+            value = [value]
+        if not_value and not isinstance(not_value, list):
+            not_value = [not_value]
+
         not_found = True
-        # TODO add timeout
         while not_found:
-            allocations = await self.get(url, {})
-            for alloc in allocations:
-                if alloc['TaskStates'] is not None:
-                    for key, values in alloc['TaskStates'].items():
-                        for event in values['Events']:
-                            logger.debug("Status : " + event['Type'])
-                            if event['Type'] in [value]:
-                                not_found = False
-                                break
-                if not_found is False:
-                    break
+            job = await self.get(url, {})
+            if job is not None:
+                if not_value:
+                    not_found = job['Status'] not in not_value
+                elif value:
+                    not_found = job['Status'] not in value
             if not_found is True:
                 await asyncio.sleep(1)
+        return job
 
     async def get(self, url, params):
         async with self.session.get(

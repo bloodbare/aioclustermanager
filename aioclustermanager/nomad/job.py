@@ -1,6 +1,8 @@
 from aioclustermanager.job import Job
-from aioclustermanager.nomad.const import DEAD
+from aioclustermanager.nomad.const import DEAD, SUCCEEDED
 from copy import deepcopy
+
+import json
 
 NOMAD_JOB = {
     "Job": {
@@ -44,11 +46,11 @@ class NomadJob(Job):
 
     @property
     def active(self):
-        return self._raw['Status'] != DEAD
+        return self._raw['Status'] not in (DEAD, SUCCEEDED)
 
     @property
     def finished(self):
-        return self._raw['Status'] == DEAD
+        return self._raw['Status'] in (DEAD, SUCCEEDED)
 
     @property
     def status(self):
@@ -70,23 +72,23 @@ class NomadJob(Job):
     def image(self):
         return self._raw['Job']['TaskGroups'][0]['Tasks'][0]['Config']['image']  # noqa
 
-    # def get_payload(self):
-    #     if 'TaskGroups' not in self._raw:
-    #         return
-    #     try:
-    #         return json.loads(
-    #             self._raw['TaskGroups'][0]['Tasks'][0]['Env']['PAYLOAD'])
-    #     except (TypeError, KeyError, json.decoder.JSONDecodeError):
-    #         try:
-    #             task = self._raw['TaskGroups'][0]['Tasks'][0]
-    #             templates = task['Templates']
-    #             template = templates[-1]['EmbeddedTmpl']
-    #             payload = template.split(
-    #                 'cat <<EOF')[-1].split('EOF')[0].strip()
-    #             return json.loads(payload)
-    #         except (TypeError, AttributeError, KeyError,
-    #                 json.decoder.JSONDecodeError):
-    #             pass
+    def get_payload(self):
+        if 'TaskGroups' not in self._raw:
+            return
+        try:
+            return json.loads(
+                self._raw['TaskGroups'][0]['Tasks'][0]['Env']['PAYLOAD'])
+        except (TypeError, KeyError, json.decoder.JSONDecodeError):
+            try:
+                task = self._raw['TaskGroups'][0]['Tasks'][0]
+                templates = task['Templates']
+                template = templates[-1]['EmbeddedTmpl']
+                payload = template.split(
+                    'cat <<EOF')[-1].split('EOF')[0].strip()
+                return json.loads(payload)
+            except (TypeError, AttributeError, KeyError,
+                    json.decoder.JSONDecodeError):
+                pass
 
     def set_datacenters(self, datacenters):
         self._raw['Job']['Datacenters'] = datacenters
