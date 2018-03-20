@@ -1,8 +1,8 @@
 0.3.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Fix Nomad job implementation
+  [vangheem]
 
 0.3.0 (2018-03-19)
 ------------------
