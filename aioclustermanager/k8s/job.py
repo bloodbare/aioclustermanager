@@ -1,6 +1,8 @@
 from aioclustermanager.job import Job
 from copy import deepcopy
 
+import json
+
 K8S_JOB = {
     "kind": "Job",
     "metadata": {
@@ -103,5 +105,5 @@ class K8SJob(Job):
         for env in container['env']:
             if env['name'] == 'PAYLOAD':
                 data = env['value']
-                return data
+                return json.loads(data)
         return None
