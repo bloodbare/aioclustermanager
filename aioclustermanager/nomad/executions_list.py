@@ -21,4 +21,6 @@ class NomadExecutionList(ExecutionList):
         return self[-1].running
 
     def is_done(self):
-        return self[-1].finished
+        if len(self) > 0:
+            return self[-1].finished
+        return True
