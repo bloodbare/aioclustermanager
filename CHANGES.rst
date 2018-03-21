@@ -1,7 +1,7 @@
 0.3.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- bump.
 
 
 0.3.1 (2018-03-20)
