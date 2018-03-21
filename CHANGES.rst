@@ -1,4 +1,4 @@
-0.3.3 (unreleased)
+0.3.3 (2018-03-21)
 ------------------
 
 - Load payload as json
