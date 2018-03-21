@@ -4,10 +4,10 @@ from aioclustermanager.k8s.executions_list import K8SExecutionList
 from aioclustermanager.k8s.job import K8SJob
 from aioclustermanager.k8s.job_list import K8SJobList
 from aioclustermanager.k8s.namespace import K8SNamespace
+from aioclustermanager.k8s.node_list import K8SNodeList
 from aioclustermanager.k8s.quota import K8SQuota
 from aioclustermanager.k8s.tf_job import K8STFJob
 from aioclustermanager.k8s.tf_job_list import K8STFJobList
-from aioclustermanager.k8s.node_list import K8SNodeList
 
 import concurrent
 import json
@@ -103,21 +103,21 @@ class K8SCaller(object):
         obj = K8SDelete()
         return await self.delete(url, version, obj.payload())
 
-    async def wait_added(self, kind, namespace, name=None):
+    async def wait_added(self, kind, namespace, name=None, timeout=30):
         url = WATCH_OPS[kind]
         url = url.format(
             namespace=namespace,
             name=name,
             endpoint=self.endpoint)
-        return await self.watch(url, value='ADDED')
+        return await self.watch(url, value='ADDED', timeout=timeout)
 
-    async def wait_deleted(self, kind, namespace, name=None):
+    async def wait_deleted(self, kind, namespace, name=None, timeout=30):
         url = WATCH_OPS[kind]
         url = url.format(
             namespace=namespace,
             name=name,
             endpoint=self.endpoint)
-        return await self.watch(url, value='DELETED')
+        return await self.watch(url, value='DELETED', timeout=timeout)
 
     async def define_quota(self, namespace, cpu_limit=None, mem_limit=None):
         url, version = POST_OPS['quota']
