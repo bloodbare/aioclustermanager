@@ -1,4 +1,4 @@
-0.3.4 (unreleased)
+0.3.4 (2018-04-12)
 ------------------
 
 - Add `get_config_maps` method to Manager
