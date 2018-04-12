@@ -192,3 +192,6 @@ class ClusterManager:
 
     async def list_tfjobs(self, namespace):
         return await self.caller.list_tfjobs(namespace)
+
+    async def get_config_maps(self, namespace, labels=None):
+        return await self.caller.get_config_maps(namespace, labels or {})

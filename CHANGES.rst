@@ -1,7 +1,8 @@
 0.3.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add `get_config_maps` method to Manager
+  [vangheem]
 
 
 0.3.3 (2018-03-21)

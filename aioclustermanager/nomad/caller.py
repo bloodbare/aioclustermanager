@@ -312,3 +312,6 @@ class NomadCaller:
                 text = await resp.text()
                 logger.error('Error call: %d - %s' % (resp.status, text))
                 raise Exception('Error calling nomad')
+
+    async def get_config_maps(self, namespace, labels=None):
+        raise NotImplemented()

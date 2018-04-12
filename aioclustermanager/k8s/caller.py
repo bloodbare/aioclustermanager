@@ -38,7 +38,8 @@ GET_OPS = {
     'log':
         'https://{endpoint}/api/v1/namespaces/{namespace}/pods/{name}/log',
     'nodes':
-        'https://{endpoint}/api/v1/nodes/'
+        'https://{endpoint}/api/v1/nodes/',
+    'configmaps': 'https://{endpoint}/api/v1/namespaces/{namespace}/configmaps?{selector}'  # noqa
 }
 
 POST_OPS = {
@@ -395,3 +396,16 @@ class K8SCaller(object):
                 text = await resp.text()
                 logger.error('Error calling k8s: %d - %s' % (resp.status, text))  # noqa
                 raise Exception('Error calling k8s')
+
+    async def get_config_maps(self, namespace, labels=None):
+        selector = ''
+        if labels:
+            selector = 'labelSelector={}'.format(
+                ','.join(f'{k}={v}' for k, v in labels.items())
+            )
+        url = GET_OPS['configmaps']
+        url = url.format(
+            namespace=namespace,
+            endpoint=self.endpoint,
+            selector=selector)
+        return await self.get(url)
