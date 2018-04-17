@@ -294,8 +294,7 @@ class NomadCaller:
                 return await resp.json()
             else:
                 text = await resp.text()
-                logger.error('Error call: %d - %s' % (resp.status, text))
-                raise Exception('Error calling nomad')
+                raise Exception('Error call: %d - %s' % (resp.status, text))
 
     async def delete(self, url, version, payload):
         async with self.session.delete(
@@ -310,8 +309,7 @@ class NomadCaller:
                 return None
             else:
                 text = await resp.text()
-                logger.error('Error call: %d - %s' % (resp.status, text))
-                raise Exception('Error calling nomad')
+                raise Exception('Error call: %d - %s' % (resp.status, text))
 
     async def get_config_maps(self, namespace, labels=None):
-        raise NotImplemented()
+        raise NotImplementedError()
