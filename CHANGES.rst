@@ -1,4 +1,4 @@
-0.3.5 (unreleased)
+0.3.5 (2018-04-17)
 ------------------
 
 - Provide error message from k8s in exception
