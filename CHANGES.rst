@@ -1,7 +1,8 @@
 0.3.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Provide error message from k8s in exception
+  [vangheem]
 
 
 0.3.4 (2018-04-12)
