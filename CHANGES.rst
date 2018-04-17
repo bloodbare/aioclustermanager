@@ -1,4 +1,4 @@
-0.3.7 (unreleased)
+0.3.7 (2018-04-17)
 ------------------
 
 - Make sure restart policy is set to never
