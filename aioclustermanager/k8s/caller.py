@@ -373,7 +373,8 @@ class K8SCaller(object):
                 return await resp.json()
             else:
                 text = await resp.text()
-                raise Exception('Error calling k8s: %d - %s' % (resp.status, text))
+                raise Exception(
+                    'Error calling k8s: %d - %s' % (resp.status, text))
 
     async def delete(self, url, version, payload):
         payload['apiVersion'] = version
@@ -393,7 +394,8 @@ class K8SCaller(object):
                 return None
             else:
                 text = await resp.text()
-                raise Exception('Error calling k8s: %d - %s' % (resp.status, text))
+                raise Exception(
+                    'Error calling k8s: %d - %s' % (resp.status, text))
 
     async def get_config_maps(self, namespace, labels=None):
         selector = ''

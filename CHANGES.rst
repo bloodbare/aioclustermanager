@@ -1,7 +1,8 @@
-0.3.6 (unreleased)
+0.3.7 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Build fixes
+  [vangheem]
 
 
 0.3.5 (2018-04-17)
