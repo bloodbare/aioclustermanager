@@ -12,6 +12,12 @@ NOMAD_JOB = {
         "TaskGroups": [{
             "Constraints": None,
             "Name": "aioclustermanager",
+            "RestartPolicy": {
+                "Attempts": 0,
+                "Delay": 15000000000,
+                "Interval": 60000000000,
+                "Mode": "fail"
+            },
             "Tasks": [{
                 "Config": {
                     "image": ""
@@ -60,8 +66,8 @@ class NomadJob(Job):
     def id(self):
         if self.namespace == '':
             return self._raw['ID']
-        elif self._raw['ID'].startswith(self._namespace):
-            to_remove = len(self._namespace) + 1
+        elif self._raw['ID'].startswith(self.namespace):
+            to_remove = len(self.namespace) + 1
             return self._raw['ID'][to_remove:]
 
     @property

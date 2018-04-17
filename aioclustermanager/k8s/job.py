@@ -11,6 +11,7 @@ K8S_JOB = {
     },
     "spec": {
         "backoffLimit": 1,
+        "restartPolicy": "Never",
         "template": {
             "metadata": {
                 "name": ""

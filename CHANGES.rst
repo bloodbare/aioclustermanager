@@ -1,7 +1,8 @@
 0.3.7 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Make sure restart policy is set to never
+  [vangheem]
 
 
 0.3.6 (2018-04-17)
