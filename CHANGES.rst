@@ -1,4 +1,4 @@
-0.3.8 (unreleased)
+0.3.8 (2018-04-18)
 ------------------
 
 - Handle no `env` value for k8s `Job.get_payload`
