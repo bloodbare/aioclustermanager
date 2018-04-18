@@ -1,7 +1,8 @@
 0.3.8 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Handle no `env` value for k8s `Job.get_payload`
+  [vangheem]
 
 
 0.3.7 (2018-04-17)

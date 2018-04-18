@@ -103,7 +103,7 @@ class K8SJob(Job):
 
     def get_payload(self):
         container = self._raw['spec']['template']['spec']['containers'][0]
-        for env in container['env']:
+        for env in container.get('env') or []:
             if env['name'] == 'PAYLOAD':
                 data = env['value']
                 return json.loads(data)
