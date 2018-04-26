@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 WATCH_OPS = {
     'namespace': 'https://{endpoint}/api/v1/watch/namespaces/{namespace}',
     'job': 'https://{endpoint}/apis/batch/v1/watch/namespaces/{namespace}/jobs/{name}',  # noqa
+    'execution': 'https://{endpoint}/api/v1/watch/namespaces/{namespace}/pods/{name}',  # noqa
     'tfjob':
         'https://{endpoint}/apis/kubeflow.org/v1alpha1/watch/namespaces/{namespace}/tfjobs/{name}'  # noqa
 }
@@ -56,6 +57,8 @@ POST_OPS = {
 DELETE_OPS = {
     'namespace':
         ('https://{endpoint}/api/v1/namespaces/{namespace}', 'v1'),
+    'execution':
+        ('https://{endpoint}/api/v1/namespaces/{namespace}/pods/{name}', 'v1'),
     'job':
         ('https://{endpoint}/apis/batch/v1/namespaces/{namespace}/jobs/{name}', 'batch/v1'),  # noqa
     'tfjob':
@@ -208,6 +211,20 @@ class K8SCaller(object):
         await self.delete(url, version, obj.payload())
         if wait:
             return await self.wait_deleted('job', namespace, name)
+        return True
+
+    async def delete_execution(self, namespace, job_id,
+                               execution_id, wait=False):
+        url, version = DELETE_OPS['execution']
+        url = url.format(
+            namespace=namespace,
+            name=execution_id,
+            endpoint=self.endpoint)
+        obj = K8SDelete()
+        await self.delete(url, version, obj.payload())
+        if wait:
+            return await self.wait_deleted(
+                'execution', namespace, execution_id)
         return True
 
     async def delete_tfjob(self, namespace, name, wait=False):

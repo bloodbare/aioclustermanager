@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 WATCH_OPS = {
     'job': 'http://{endpoint}/v1/job/{namespace}-{name}',
+    'execution': 'http://{endpoint}/v1/job/{namespace}-{name}/allocations/{execution}',  # noqa
     'namespace': None
 }
 
@@ -30,7 +31,8 @@ POST_OPS = {
 }
 
 DELETE_OPS = {
-    'job': 'http://{endpoint}/v1/job/{namespace}-{name}?purge=true'
+    'job': 'http://{endpoint}/v1/job/{namespace}-{name}?purge=true',
+    'execution': 'http://{endpoint}/v1/job/{namespace}-{name}/allocations/{execution}?purge=true',  # noqa
 }
 
 
@@ -79,13 +81,14 @@ class NomadCaller:
             endpoint=self.endpoint)
         return await self.watch(url, not_value=['pending'], timeout=timeout)
 
-    async def wait_deleted(self, kind, namespace, name=None):
+    async def wait_deleted(self, kind, namespace, name=None, execution_id=None):  # noqa
         url = WATCH_OPS[kind]
         if url is None:
             return False
         url = url.format(
             namespace=namespace,
             name=name,
+            execution=execution_id,
             endpoint=self.endpoint)
         return await self.watch(url, value=['dead', 'complete'])
 
@@ -166,6 +169,20 @@ class NomadCaller:
         await self.delete(url, None, None)
         if wait:
             return await self.wait_deleted('job', namespace, name)
+        return True
+
+    async def delete_execution(self, namespace, job_id,
+                               execution_id, wait=False):
+        url = DELETE_OPS['execution']
+        url = url.format(
+            namespace=namespace,
+            name=job_id,
+            execution=execution_id,
+            endpoint=self.endpoint)
+        await self.delete(url, None, None)
+        if wait:
+            return await self.wait_deleted(
+                'execution', namespace, job_id, execution_id)
         return True
 
     async def delete_tfjob(self, namespace, name, wait=False):

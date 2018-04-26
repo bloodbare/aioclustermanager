@@ -8,5 +8,6 @@ pip-selfcheck.json
 *.whl
 *.tar.gz
 .coverage
+.idea
 coverage.xml
 linux-amd64
