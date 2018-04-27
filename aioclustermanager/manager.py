@@ -101,6 +101,10 @@ class ClusterManager:
                 namespace, job_id, execution_id):
             yield log_line
 
+    async def delete_execution(self, namespace, job_id, execution_id):
+        return await self.caller.delete_execution(
+            namespace, job_id, execution_id)
+
     async def wait_for_job_execution_status(self, namespace, name):
         status = self._const.PENDING
         while status not in [self._const.RUNNING, self._const.ERROR,

@@ -8,6 +8,12 @@ def get_k8s_config():
     home = str(Path.home())
     # Designed to run on docker desktop k8s support
     # XXX DOES NOT CURRENTLY WORK WITH containers running in k8s already
+    if os.environ.get('TEST_INSIDE_K8S', False):
+        config_k8s = {
+            'in_cluster': True
+        }
+        return config_k8s
+
     with open(home + '/.kube/config', 'r') as f:
         configuration = yaml.load(f)
 
