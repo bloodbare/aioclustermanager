@@ -1,8 +1,16 @@
-0.3.9 (unreleased)
+0.3.10 (unreleased)
 ------------------
 
 - Nothing changed yet.
 
+0.3.9 (2018-04-27)
+------------------
+
+- Adding support to delete executions
+  [ramonnb]
+
+- Adding testing support for in-cluster tests
+  [ramonnb]
 
 0.3.8 (2018-04-18)
 ------------------
