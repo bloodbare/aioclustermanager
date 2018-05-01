@@ -16,53 +16,53 @@ import logging
 logger = logging.getLogger(__name__)
 
 WATCH_OPS = {
-    'namespace': 'https://{endpoint}/api/v1/watch/namespaces/{namespace}',
-    'job': 'https://{endpoint}/apis/batch/v1/watch/namespaces/{namespace}/jobs/{name}',  # noqa
-    'execution': 'https://{endpoint}/api/v1/watch/namespaces/{namespace}/pods/{name}',  # noqa
+    'namespace': '{scheme}://{endpoint}/api/v1/watch/namespaces/{namespace}',
+    'job': '{scheme}://{endpoint}/apis/batch/v1/watch/namespaces/{namespace}/jobs/{name}',  # noqa
+    'execution': '{scheme}://{endpoint}/api/v1/watch/namespaces/{namespace}/pods/{name}',  # noqa
     'tfjob':
-        'https://{endpoint}/apis/kubeflow.org/v1alpha1/watch/namespaces/{namespace}/tfjobs/{name}'  # noqa
+        '{scheme}://{endpoint}/apis/kubeflow.org/v1alpha1/watch/namespaces/{namespace}/tfjobs/{name}'  # noqa
 }
 
 GET_OPS = {
     'namespace':
-        'https://{endpoint}/api/v1/namespaces/{namespace}',
+        '{scheme}://{endpoint}/api/v1/namespaces/{namespace}',
     'list_jobs':
-        'https://{endpoint}/apis/batch/v1/namespaces/{namespace}/jobs',
+        '{scheme}://{endpoint}/apis/batch/v1/namespaces/{namespace}/jobs',
     'job':
-        'https://{endpoint}/apis/batch/v1/namespaces/{namespace}/jobs/{name}/status',  # noqa
+        '{scheme}://{endpoint}/apis/batch/v1/namespaces/{namespace}/jobs/{name}/status',  # noqa
     'executions':
-        'https://{endpoint}/api/v1/namespaces/{namespace}/pods/?labelSelector=job-name={name}',  # noqa
+        '{scheme}://{endpoint}/api/v1/namespaces/{namespace}/pods/?labelSelector=job-name={name}',  # noqa
     'tfjob':
-        'https://{endpoint}/apis/kubeflow.org/v1alpha1/namespaces/{namespace}/tfjobs/{name}',  # noqa
+        '{scheme}://{endpoint}/apis/kubeflow.org/v1alpha1/namespaces/{namespace}/tfjobs/{name}',  # noqa
     'list_tfjobs':
-        'https://{endpoint}/apis/kubeflow.org/v1alpha1/namespaces/{namespace}/tfjobs',  # noqa
+        '{scheme}://{endpoint}/apis/kubeflow.org/v1alpha1/namespaces/{namespace}/tfjobs',  # noqa
     'log':
-        'https://{endpoint}/api/v1/namespaces/{namespace}/pods/{name}/log',
+        '{scheme}://{endpoint}/api/v1/namespaces/{namespace}/pods/{name}/log',
     'nodes':
-        'https://{endpoint}/api/v1/nodes/',
-    'configmaps': 'https://{endpoint}/api/v1/namespaces/{namespace}/configmaps?{selector}'  # noqa
+        '{scheme}://{endpoint}/api/v1/nodes/',
+    'configmaps': '{scheme}://{endpoint}/api/v1/namespaces/{namespace}/configmaps?{selector}'  # noqa
 }
 
 POST_OPS = {
     'namespace':
-        ('https://{endpoint}/api/v1/namespaces', 'v1'),
+        ('{scheme}://{endpoint}/api/v1/namespaces', 'v1'),
     'job':
-        ('https://{endpoint}/apis/batch/v1/namespaces/{namespace}/jobs', 'batch/v1'),  # noqa
+        ('{scheme}://{endpoint}/apis/batch/v1/namespaces/{namespace}/jobs', 'batch/v1'),  # noqa
     'tfjob':
-        ('https://{endpoint}/apis/kubeflow.org/v1alpha1/namespaces/{namespace}/tfjobs', 'kubeflow.org/v1alpha1'),  # noqa
+        ('{scheme}://{endpoint}/apis/kubeflow.org/v1alpha1/namespaces/{namespace}/tfjobs', 'kubeflow.org/v1alpha1'),  # noqa
     'quota':
-        ('https://{endpoint}/api/v1/namespaces/{namespace}/resourcequotas', 'v1')  # noqa
+        ('{scheme}://{endpoint}/api/v1/namespaces/{namespace}/resourcequotas', 'v1')  # noqa
 }
 
 DELETE_OPS = {
     'namespace':
-        ('https://{endpoint}/api/v1/namespaces/{namespace}', 'v1'),
+        ('{scheme}://{endpoint}/api/v1/namespaces/{namespace}', 'v1'),
     'execution':
-        ('https://{endpoint}/api/v1/namespaces/{namespace}/pods/{name}', 'v1'),
+        ('{scheme}://{endpoint}/api/v1/namespaces/{namespace}/pods/{name}', 'v1'),
     'job':
-        ('https://{endpoint}/apis/batch/v1/namespaces/{namespace}/jobs/{name}', 'batch/v1'),  # noqa
+        ('{scheme}://{endpoint}/apis/batch/v1/namespaces/{namespace}/jobs/{name}', 'batch/v1'),  # noqa
     'tfjob':
-        ('https://{endpoint}/apis/kubeflow.org/v1alpha1/namespaces/{namespace}/tfjobs/{name}', 'v1')  # noqa
+        ('{scheme}://{endpoint}/apis/kubeflow.org/v1alpha1/namespaces/{namespace}/tfjobs/{name}', 'v1')  # noqa
 }
 
 
@@ -70,11 +70,12 @@ class K8SCaller(object):
     constants = const
     _type = 'k8s'
 
-    def __init__(self, ssl_context, endpoint, session, verify=True):
+    def __init__(self, ssl_context, endpoint, session, verify=True, scheme='https'):
         self.ssl_context = ssl_context
         self.endpoint = endpoint
         self.session = session
         self.verify = verify
+        self.scheme = scheme
 
     @property
     def type(self):
@@ -84,7 +85,8 @@ class K8SCaller(object):
         url = GET_OPS['namespace']
         url = url.format(
             namespace=namespace,
-            endpoint=self.endpoint)
+            endpoint=self.endpoint,
+            scheme=self.scheme)
         result = await self.get(url)
         if result is None:
             return None
@@ -95,7 +97,8 @@ class K8SCaller(object):
         url, version = POST_OPS['namespace']
         url = url.format(
             namespace=namespace,
-            endpoint=self.endpoint)
+            endpoint=self.endpoint,
+            scheme=self.scheme)
         obj = K8SNamespace(namespace)
         return await self.post(url, version, obj.payload())
 
@@ -103,7 +106,8 @@ class K8SCaller(object):
         url, version = DELETE_OPS['namespace']
         url = url.format(
             namespace=namespace,
-            endpoint=self.endpoint)
+            endpoint=self.endpoint,
+            scheme=self.scheme)
         obj = K8SDelete()
         return await self.delete(url, version, obj.payload())
 
@@ -112,7 +116,8 @@ class K8SCaller(object):
         url = url.format(
             namespace=namespace,
             name=name,
-            endpoint=self.endpoint)
+            endpoint=self.endpoint,
+            scheme=self.scheme)
         return await self.watch(url, value='ADDED', timeout=timeout)
 
     async def wait_deleted(self, kind, namespace, name=None, timeout=30):
@@ -120,14 +125,16 @@ class K8SCaller(object):
         url = url.format(
             namespace=namespace,
             name=name,
-            endpoint=self.endpoint)
+            endpoint=self.endpoint,
+            scheme=self.scheme)
         return await self.watch(url, value='DELETED', timeout=timeout)
 
     async def define_quota(self, namespace, cpu_limit=None, mem_limit=None):
         url, version = POST_OPS['quota']
         url = url.format(
             namespace=namespace,
-            endpoint=self.endpoint)
+            endpoint=self.endpoint,
+            scheme=self.scheme)
         obj = K8SQuota(
             namespace=namespace,
             max_cpu=cpu_limit,
@@ -137,7 +144,8 @@ class K8SCaller(object):
     async def get_nodes(self):
         url = GET_OPS['nodes']
         url = url.format(
-            endpoint=self.endpoint)
+            endpoint=self.endpoint,
+            scheme=self.scheme)
         result = await self.get(url)
         if result is None:
             return None
@@ -149,7 +157,8 @@ class K8SCaller(object):
         url = url.format(
             namespace=namespace,
             name=name,
-            endpoint=self.endpoint)
+            endpoint=self.endpoint,
+            scheme=self.scheme)
         result = await self.get(url)
         if result is None:
             return None
@@ -161,7 +170,8 @@ class K8SCaller(object):
         url = url.format(
             namespace=namespace,
             name=name,
-            endpoint=self.endpoint)
+            endpoint=self.endpoint,
+            scheme=self.scheme)
         result = await self.get(url)
         if result is None:
             return None
@@ -173,7 +183,8 @@ class K8SCaller(object):
         url = url.format(
             namespace=namespace,
             name=name,
-            endpoint=self.endpoint)
+            endpoint=self.endpoint,
+            scheme=self.scheme)
         result = await self.get(url)
         if result is None:
             return None
@@ -185,7 +196,8 @@ class K8SCaller(object):
         url = url.format(
             namespace=namespace,
             name=execution_id,
-            endpoint=self.endpoint)
+            endpoint=self.endpoint,
+            scheme=self.scheme)
         result = await self.get(url, noaccept=True)
         if result is None:
             return None
@@ -197,7 +209,8 @@ class K8SCaller(object):
         url = url.format(
             namespace=namespace,
             name=execution_id,
-            endpoint=self.endpoint)
+            endpoint=self.endpoint,
+            scheme=self.scheme)
         async for logline in await self._watch_log(url, timeout=3660):
             yield logline
 
@@ -206,7 +219,8 @@ class K8SCaller(object):
         url = url.format(
             namespace=namespace,
             name=name,
-            endpoint=self.endpoint)
+            endpoint=self.endpoint,
+            scheme=self.scheme)
         obj = K8SDelete()
         await self.delete(url, version, obj.payload())
         if wait:
@@ -219,7 +233,8 @@ class K8SCaller(object):
         url = url.format(
             namespace=namespace,
             name=execution_id,
-            endpoint=self.endpoint)
+            endpoint=self.endpoint,
+            scheme=self.scheme)
         obj = K8SDelete()
         await self.delete(url, version, obj.payload())
         if wait:
@@ -232,7 +247,8 @@ class K8SCaller(object):
         url = url.format(
             namespace=namespace,
             name=name,
-            endpoint=self.endpoint)
+            endpoint=self.endpoint,
+            scheme=self.scheme)
         obj = K8SDelete()
         await self.delete(url, version, obj.payload())
         if wait:
@@ -243,7 +259,8 @@ class K8SCaller(object):
         url = GET_OPS['list_jobs']
         url = url.format(
             namespace=namespace,
-            endpoint=self.endpoint)
+            endpoint=self.endpoint,
+            scheme=self.scheme)
         result = await self.get(url)
         if result is None:
             return None
@@ -254,7 +271,8 @@ class K8SCaller(object):
         url = GET_OPS['list_tfjobs']
         url = url.format(
             namespace=namespace,
-            endpoint=self.endpoint)
+            endpoint=self.endpoint,
+            scheme=self.scheme)
         result = await self.get(url)
         if result is None:
             return None
@@ -271,7 +289,8 @@ class K8SCaller(object):
         url = url.format(
             namespace=namespace,
             name=name,
-            endpoint=self.endpoint)
+            endpoint=self.endpoint,
+            scheme=self.scheme)
         obj = K8SJob(
             namespace=namespace,
             name=name,
@@ -293,7 +312,8 @@ class K8SCaller(object):
         url = url.format(
             namespace=namespace,
             name=name,
-            endpoint=self.endpoint)
+            endpoint=self.endpoint,
+            scheme=self.scheme)
         obj = K8STFJob(
             namespace=namespace,
             name=name,
@@ -310,7 +330,8 @@ class K8SCaller(object):
         url = url.format(
             namespace=namespace,
             name=name,
-            endpoint=self.endpoint)
+            endpoint=self.endpoint,
+            scheme=self.scheme)
         try:
             # We only wait 1 hour
             async for data in self._watch(url, 3660):
@@ -424,5 +445,6 @@ class K8SCaller(object):
         url = url.format(
             namespace=namespace,
             endpoint=self.endpoint,
-            selector=selector)
+            selector=selector,
+            scheme=self.scheme)
         return await self.get(url)

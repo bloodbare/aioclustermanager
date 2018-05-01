@@ -29,6 +29,7 @@ class Configuration:
     file = None
     ssl_context = None
     cert_file = None
+    scheme = 'https'
 
     def __init__(self, environment, loop=None):
         self.headers = {}
@@ -38,7 +39,6 @@ class Configuration:
             self.loop = loop
 
         self.environment = environment
-
         if environment.get('in_cluster'):
             if SERVICE_TOKEN_ENV_NAME in os.environ:
                 token = os.environ[SERVICE_TOKEN_ENV_NAME]
@@ -81,6 +81,9 @@ class Configuration:
         else:
             self.verify = True
 
+        if 'http_scheme' in environment:
+            self.scheme = environment['http_scheme']
+
     def load_skip_ssl(self):
         self.session = aiohttp.ClientSession(
             connector=aiohttp.TCPConnector(verify_ssl=False, loop=self.loop),
@@ -94,8 +97,7 @@ class Configuration:
 
     def load_certificate_file(self):
         logger.debug('Loading cert files')
-        ssl_client_context = ssl.create_default_context(
-            purpose=ssl.Purpose.CLIENT_AUTH)
+        ssl_client_context = ssl.create_default_context(purpose=ssl.Purpose.CLIENT_AUTH)
         if 'key_file' in self.environment:
             ssl_client_context.load_cert_chain(
                 certfile=self.environment['certificate_file'],
@@ -143,7 +145,8 @@ class K8SContextManager:
             self.config.ssl_context,
             self.environment['endpoint'],
             self.config.session,
-            verify=self.config.verify)
+            verify=self.config.verify,
+            scheme=self.config.scheme)
 
     async def __aexit__(self, exc_type, exc, tb):
         await self.close()
@@ -160,4 +163,5 @@ async def create_k8s_caller(environment):
         config.ssl_context,
         environment['endpoint'],
         config.session,
-        verify=config.verify)
+        verify=config.verify,
+        scheme=config.scheme)
