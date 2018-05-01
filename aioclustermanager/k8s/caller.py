@@ -58,7 +58,7 @@ DELETE_OPS = {
     'namespace':
         ('{scheme}://{endpoint}/api/v1/namespaces/{namespace}', 'v1'),
     'execution':
-        ('{scheme}://{endpoint}/api/v1/namespaces/{namespace}/pods/{name}', 'v1'),
+        ('{scheme}://{endpoint}/api/v1/namespaces/{namespace}/pods/{name}', 'v1'),  # noqa
     'job':
         ('{scheme}://{endpoint}/apis/batch/v1/namespaces/{namespace}/jobs/{name}', 'batch/v1'),  # noqa
     'tfjob':
@@ -70,7 +70,8 @@ class K8SCaller(object):
     constants = const
     _type = 'k8s'
 
-    def __init__(self, ssl_context, endpoint, session, verify=True, scheme='https'):
+    def __init__(self, ssl_context, endpoint, session,
+                 verify=True, scheme='https'):
         self.ssl_context = ssl_context
         self.endpoint = endpoint
         self.session = session
