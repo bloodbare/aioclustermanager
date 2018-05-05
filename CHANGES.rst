@@ -1,5 +1,5 @@
-0.3.10 (unreleased)
-------------------
+0.3.10 (2018-05-05)
+-------------------
 
 - Be able to specific kubernetes API and use non-ssl endpoints
   [vangheem]
