@@ -1,4 +1,4 @@
-0.3.11 (unreleased)
+0.3.11 (2018-05-21)
 -------------------
 
 - Adding support to scale up and down deployments
