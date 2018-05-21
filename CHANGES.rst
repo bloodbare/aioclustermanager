@@ -1,7 +1,8 @@
 0.3.11 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Adding support to scale up and down deployments
+  [ramonnb]
 
 
 0.3.10 (2018-05-05)

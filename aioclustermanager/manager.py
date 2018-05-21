@@ -137,6 +137,12 @@ class ClusterManager:
                 result.append(key)
         return result
 
+    async def get_scale_deploy(self, namespace, name):
+        return await self.caller.get_scale_deploy(namespace, name)
+
+    async def set_scale_deploy(self, namespace, name, scale):
+        return await self.caller.set_scale_deploy(namespace, name, scale)
+
     # Only K8S
 
     async def install_tfjobs(self, namespace, cloud=None, install_helm=False):

@@ -40,7 +40,13 @@ GET_OPS = {
         '{scheme}://{endpoint}/api/v1/namespaces/{namespace}/pods/{name}/log',
     'nodes':
         '{scheme}://{endpoint}/api/v1/nodes/',
-    'configmaps': '{scheme}://{endpoint}/api/v1/namespaces/{namespace}/configmaps?{selector}'  # noqa
+    'configmaps': '{scheme}://{endpoint}/api/v1/namespaces/{namespace}/configmaps?{selector}',  # noqa
+    'deployments': '{scheme}://{endpoint}/apis/apps/v1/namespaces/{namespace}/deployments/{name}',  # noqa
+    'scale': '{scheme}://{endpoint}/apis/apps/v1/namespaces/{namespace}/deployments/{name}/scale'  # noqa
+}
+
+PATCH_OPS = {
+    'scale': '{scheme}://{endpoint}/apis/apps/v1/namespaces/{namespace}/deployments/{name}/scale'  # noqa
 }
 
 POST_OPS = {
@@ -152,6 +158,38 @@ class K8SCaller(object):
             return None
         else:
             return K8SNodeList(data=result)
+
+    async def get_scale_deploy(self, namespace, name):
+        url = GET_OPS['scale']
+        url = url.format(
+            namespace=namespace,
+            name=name,
+            endpoint=self.endpoint,
+            scheme=self.scheme)
+        result = await self.get(url)
+        if result is None:
+            return None
+        else:
+            logger.warning(result)
+            return result['status']['replicas']
+
+    async def set_scale_deploy(self, namespace, name, scale):
+        url = PATCH_OPS['scale']
+        url = url.format(
+            namespace=namespace,
+            name=name,
+            endpoint=self.endpoint,
+            scheme=self.scheme)
+        obj = [{
+            "op": "replace",
+            "path": "/spec/replicas",
+            "value": scale
+        }]
+        result = await self.patch(url, obj)
+        if result is None:
+            return None
+        else:
+            return result['spec']['replicas']
 
     async def get_job(self, namespace, name):
         url = GET_OPS['job']
@@ -397,6 +435,23 @@ class K8SCaller(object):
                 return await resp.text()
             else:
                 return await resp.json()
+
+    async def patch(self, url, payload):
+        async with self.session.patch(
+                url,
+                json=payload,
+                headers={
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json-patch+json'
+                },
+                ssl_context=self.ssl_context,
+                verify_ssl=self.verify) as resp:
+            if resp.status in [201, 200]:
+                return await resp.json()
+            else:
+                text = await resp.text()
+                raise Exception(
+                    'Error calling k8s: %d - %s' % (resp.status, text))
 
     async def post(self, url, version, payload):
         payload['apiVersion'] = version
