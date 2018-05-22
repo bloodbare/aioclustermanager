@@ -1,7 +1,8 @@
 0.3.12 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Removing a warning
+  [ramonnb]
 
 
 0.3.11 (2018-05-21)

@@ -170,7 +170,6 @@ class K8SCaller(object):
         if result is None:
             return None
         else:
-            logger.warning(result)
             return result['status']['replicas']
 
     async def set_scale_deploy(self, namespace, name, scale):
