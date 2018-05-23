@@ -1,7 +1,8 @@
 0.3.14 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Missed file scale.py
+  [ramonnb]
 
 
 0.3.13 (2018-05-23)
