@@ -1,4 +1,4 @@
-0.3.13 (unreleased)
+0.3.13 (2018-05-23)
 -------------------
 
 - Adding support to scale up and down nomad jobs
