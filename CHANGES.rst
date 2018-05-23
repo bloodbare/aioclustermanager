@@ -1,7 +1,8 @@
 0.3.13 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Adding support to scale up and down nomad jobs
+  [ramonnb]
 
 
 0.3.12 (2018-05-22)

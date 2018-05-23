@@ -8,6 +8,7 @@ from aioclustermanager.k8s.node_list import K8SNodeList
 from aioclustermanager.k8s.quota import K8SQuota
 from aioclustermanager.k8s.tf_job import K8STFJob
 from aioclustermanager.k8s.tf_job_list import K8STFJobList
+from aioclustermanager.k8s.scale import K8SScale
 
 import concurrent
 import json
@@ -45,8 +46,8 @@ GET_OPS = {
     'scale': '{scheme}://{endpoint}/apis/apps/v1/namespaces/{namespace}/deployments/{name}/scale'  # noqa
 }
 
-PATCH_OPS = {
-    'scale': '{scheme}://{endpoint}/apis/apps/v1/namespaces/{namespace}/deployments/{name}/scale'  # noqa
+PUT_OPS = {
+    'scale': ('{scheme}://{endpoint}/apis/apps/v1/namespaces/{namespace}/deployments/{name}/scale', 'autoscaling/v1')  # noqa
 }
 
 POST_OPS = {
@@ -173,22 +174,16 @@ class K8SCaller(object):
             return result['status']['replicas']
 
     async def set_scale_deploy(self, namespace, name, scale):
-        url = PATCH_OPS['scale']
+        url, version = PUT_OPS['scale']
         url = url.format(
             namespace=namespace,
             name=name,
             endpoint=self.endpoint,
             scheme=self.scheme)
-        obj = [{
-            "op": "replace",
-            "path": "/spec/replicas",
-            "value": scale
-        }]
-        result = await self.patch(url, obj)
-        if result is None:
-            return None
-        else:
-            return result['spec']['replicas']
+
+        obj = K8SScale(namespace, name, scale)
+
+        return await self.put(url, version, obj.payload())
 
     async def get_job(self, namespace, name):
         url = GET_OPS['job']
@@ -442,6 +437,23 @@ class K8SCaller(object):
                 headers={
                     'Accept': 'application/json',
                     'Content-Type': 'application/json-patch+json'
+                },
+                ssl_context=self.ssl_context,
+                verify_ssl=self.verify) as resp:
+            if resp.status in [201, 200]:
+                return await resp.json()
+            else:
+                text = await resp.text()
+                raise Exception(
+                    'Error calling k8s: %d - %s' % (resp.status, text))
+
+    async def put(self, url, version, payload):
+        payload['apiVersion'] = version
+        async with self.session.put(
+                url,
+                json=payload,
+                headers={
+                    'Accept': 'application/json'
                 },
                 ssl_context=self.ssl_context,
                 verify_ssl=self.verify) as resp:

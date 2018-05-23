@@ -27,7 +27,8 @@ GET_OPS = {
 }
 
 POST_OPS = {
-    'job': 'http://{endpoint}/v1/jobs'
+    'jobs': 'http://{endpoint}/v1/jobs',
+    'job': 'http://{endpoint}/v1/job/{namespace}-{name}'
 }
 
 DELETE_OPS = {
@@ -114,6 +115,22 @@ class NomadCaller:
     async def get_tfjob(self, namespace, name):
         # TODO
         return None
+
+    async def get_scale_deploy(self, namespace, name):
+        job = await self.get_job(namespace, name)
+        return job.scale
+
+    async def set_scale_deploy(self, namespace, name, scale):
+        job = await self.get_job(namespace, name)
+        job.rewrap()
+        url = POST_OPS['jobs']
+        job.scale = scale
+        url = url.format(
+            namespace=namespace,
+            name=name,
+            endpoint=self.endpoint)
+        job._namespace = namespace
+        return await self.post(url, None, job.payload())
 
     async def get_job_executions(self, namespace, name):
         url = GET_OPS['executions']
@@ -213,7 +230,7 @@ class NomadCaller:
             cpu_limit=None, mem_limit=None,
             envvars={}, volumes=None, volumeMounts=None,
             envFrom=None, entrypoint=None):
-        url = POST_OPS['job']
+        url = POST_OPS['jobs']
         url = url.format(
             namespace=namespace,
             name=name,

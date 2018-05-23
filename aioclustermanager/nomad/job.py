@@ -78,6 +78,25 @@ class NomadJob(Job):
     def image(self):
         return self._raw['Job']['TaskGroups'][0]['Tasks'][0]['Config']['image']  # noqa
 
+    @property
+    def scale(self):
+        if 'TaskGroups' in self._raw:
+            return self._raw['TaskGroups'][0]['Count']
+        else:
+            return self._raw['Job']['TaskGroups'][0]['Count']
+
+    @scale.setter
+    def scale(self, scale):
+        if 'TaskGroups' in self._raw:
+            self._raw['TaskGroups'][0]['Count'] = scale
+        else:
+            self._raw['Job']['TaskGroups'][0]['Count'] = scale
+
+    def rewrap(self):
+        self._raw = {
+            'Job': self._raw
+        }
+
     def get_payload(self):
         if 'TaskGroups' not in self._raw:
             return

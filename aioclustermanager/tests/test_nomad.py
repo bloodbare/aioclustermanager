@@ -38,6 +38,14 @@ async def test_get_jobs_nomad(nomad):
     job_info = await nomad.get_job('aiocluster-test', 'test-job')
     assert job_info.id == 'test-job'
 
+    scale = await nomad.get_scale_deploy('aiocluster-test', 'test-job')
+    assert scale == 1
+
+    await nomad.set_scale_deploy('aiocluster-test', 'test-job', 2)
+
+    scale = await nomad.get_scale_deploy('aiocluster-test', 'test-job')
+    assert scale == 2
+
     executions = await nomad.list_job_executions(
         'aiocluster-test', 'test-job')
     assert len(executions) > 0
