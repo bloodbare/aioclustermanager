@@ -1,4 +1,4 @@
-0.3.14 (unreleased)
+0.3.14 (2018-05-23)
 -------------------
 
 - Missed file scale.py
