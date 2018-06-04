@@ -1,7 +1,8 @@
 0.3.17 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Provide more defaults for nomad jobs
+  [vangheem]
 
 
 0.3.16 (2018-06-04)

@@ -12,6 +12,11 @@ NOMAD_JOB = {
         "TaskGroups": [{
             "Constraints": None,
             "Name": "aioclustermanager",
+            "EphemeralDisk": {
+                "Migrate": False,
+                "SizeMB": 300,
+                "Sticky": False
+            },
             "RestartPolicy": {
                 "Attempts": 0,
                 "Delay": 15000000000,
@@ -32,7 +37,18 @@ NOMAD_JOB = {
                 "Name": "",
                 "Resources": {
                     "CPU": 200,
-                    "MemoryMB": 300
+                    "MemoryMB": 300,
+                    "Networks": [{
+                        "CIDR": "",
+                        "Device": "",
+                        "DynamicPorts": [{
+                            "Label": "db",
+                            "Value": 0
+                        }],
+                        "IP": "",
+                        "MBits": 200,
+                        "ReservedPorts": None
+                    }]
                 },
                 "Services": [],
                 "Templates": [],
