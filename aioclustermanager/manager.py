@@ -68,8 +68,8 @@ class ClusterManager:
     async def get_job(self, namespace, name):
         return await self.caller.get_job(namespace, name)
 
-    async def delete_job(self, namespace, name, wait=False):
-        return await self.caller.delete_job(namespace, name, wait)
+    async def delete_job(self, namespace, name, wait=False, purge=True):
+        return await self.caller.delete_job(namespace, name, wait, purge)
 
     async def cleanup_jobs(self, namespace):
         jobs = await self.list_jobs(namespace)
@@ -101,9 +101,10 @@ class ClusterManager:
                 namespace, job_id, execution_id):
             yield log_line
 
-    async def delete_execution(self, namespace, job_id, execution_id):
+    async def delete_execution(self, namespace, job_id,
+                               execution_id, purge=True):
         return await self.caller.delete_execution(
-            namespace, job_id, execution_id)
+            namespace, job_id, execution_id, purge)
 
     async def wait_for_job_execution_status(self, namespace, name):
         status = self._const.PENDING

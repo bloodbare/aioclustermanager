@@ -32,8 +32,8 @@ POST_OPS = {
 }
 
 DELETE_OPS = {
-    'job': 'http://{endpoint}/v1/job/{namespace}-{name}?purge=true',
-    'execution': 'http://{endpoint}/v1/job/{namespace}-{name}/allocations/{execution}?purge=true',  # noqa
+    'job': 'http://{endpoint}/v1/job/{namespace}-{name}?purge={purge}',
+    'execution': 'http://{endpoint}/v1/job/{namespace}-{name}/allocations/{execution}?purge={purge}',  # noqa
 }
 
 
@@ -177,25 +177,27 @@ class NomadCaller:
         async for logline in await self._watch_log(url, params, timeout=3660):
             yield logline
 
-    async def delete_job(self, namespace, name, wait=False):
+    async def delete_job(self, namespace, name, wait=False, purge=True):
         url = DELETE_OPS['job']
         url = url.format(
             namespace=namespace,
             name=name,
-            endpoint=self.endpoint)
+            endpoint=self.endpoint,
+            purge='true' if purge else 'false')
         await self.delete(url, None, None)
         if wait:
             return await self.wait_deleted('job', namespace, name)
         return True
 
     async def delete_execution(self, namespace, job_id,
-                               execution_id, wait=False):
+                               execution_id, wait=False, purge=True):
         url = DELETE_OPS['execution']
         url = url.format(
             namespace=namespace,
             name=job_id,
             execution=execution_id,
-            endpoint=self.endpoint)
+            endpoint=self.endpoint,
+            purge='true' if purge else 'false')
         await self.delete(url, None, None)
         if wait:
             return await self.wait_deleted(

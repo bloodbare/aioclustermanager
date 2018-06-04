@@ -247,28 +247,28 @@ class K8SCaller(object):
         async for logline in await self._watch_log(url, timeout=3660):
             yield logline
 
-    async def delete_job(self, namespace, name, wait=False):
+    async def delete_job(self, namespace, name, wait=False, purge=True):
         url, version = DELETE_OPS['job']
         url = url.format(
             namespace=namespace,
             name=name,
             endpoint=self.endpoint,
             scheme=self.scheme)
-        obj = K8SDelete()
+        obj = K8SDelete(purge)
         await self.delete(url, version, obj.payload())
         if wait:
             return await self.wait_deleted('job', namespace, name)
         return True
 
     async def delete_execution(self, namespace, job_id,
-                               execution_id, wait=False):
+                               execution_id, wait=False, purge=True):
         url, version = DELETE_OPS['execution']
         url = url.format(
             namespace=namespace,
             name=execution_id,
             endpoint=self.endpoint,
             scheme=self.scheme)
-        obj = K8SDelete()
+        obj = K8SDelete(purge)
         await self.delete(url, version, obj.payload())
         if wait:
             return await self.wait_deleted(
