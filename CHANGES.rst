@@ -1,4 +1,4 @@
-0.3.15 (unreleased)
+0.3.15 (2018-06-04)
 -------------------
 
 - Error using nomad list of args
