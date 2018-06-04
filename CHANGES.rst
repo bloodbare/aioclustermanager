@@ -1,4 +1,4 @@
-0.3.17 (unreleased)
+0.3.17 (2018-06-04)
 -------------------
 
 - Provide more defaults for nomad jobs
