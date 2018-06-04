@@ -146,7 +146,7 @@ class NomadJob(Job):
                 extend_args = kw['command'][1:]
 
         if 'args' in kw and kw['args'] is not None:
-            job_info['Job']['TaskGroups'][0]['Tasks'][0]['Config']['args'] = ' '.join(extend_args) + ' ' + kw['args']  # noqa
+            job_info['Job']['TaskGroups'][0]['Tasks'][0]['Config']['args'] = extend_args + kw['args']  # noqa
 
         if 'templates' in kw and kw['templates'] is not None:
             job_info['Job']['TaskGroups'][0]['Tasks'][0]['Templates'] = kw['templates']  # noqa

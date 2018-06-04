@@ -1,7 +1,8 @@
 0.3.15 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Error using nomad list of args
+  [vangheem]
 
 
 0.3.14 (2018-05-23)

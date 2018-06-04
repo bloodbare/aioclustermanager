@@ -18,7 +18,8 @@ async def test_get_jobs_nomad(nomad):
         'aiocluster-test',
         'test-job',
         'perl',
-        command=["perl", "-Mbignum=bpi", "-wle", "print bpi(2000)"],
+        command=["perl"],
+        args=["-Mbignum=bpi", "-wle", "print bpi(2000)"],
         timeout=45,
         delete=True,
         wait=False)
