@@ -1,4 +1,4 @@
-0.3.16 (unreleased)
+0.3.16 (2018-06-04)
 -------------------
 
 - Provide purge option on deletion for k8s and nomad
