@@ -1,7 +1,8 @@
 0.3.18 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Provide keywords on jobs
+  [ramonnb]
 
 
 0.3.17 (2018-06-04)
@@ -15,6 +16,7 @@
 -------------------
 
 - Provide purge option on deletion for k8s and nomad
+  [ramonnb]
 
 
 0.3.15 (2018-06-04)

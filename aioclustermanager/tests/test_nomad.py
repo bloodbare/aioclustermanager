@@ -3,6 +3,23 @@ import pytest
 pytestmark = pytest.mark.asyncio
 
 
+IPV6_TEMPLATE = [{
+    "ChangeMode": "restart",
+    "ChangeSignal": "",
+    "DestPath": "/aio-environment/resolv.conf",
+    "EmbeddedTmpl": "nameserver ::1\n",
+    "LeftDelim": "{{",
+    "Perms": "0644",
+    "RightDelim": "}}",
+    "SourcePath": "",
+    "Splay": 5000000000
+}]
+
+IPV6_VOLUMES = [
+    "aio-environment/resolv.conf:/etc/resolv.conf"
+]
+
+
 async def test_get_jobs_nomad(nomad):
     # We clean up all the jobs on the namespace
     result = await nomad.get_nodes()
@@ -22,10 +39,14 @@ async def test_get_jobs_nomad(nomad):
         args=["-Mbignum=bpi", "-wle", "print bpi(2000)"],
         timeout=45,
         delete=True,
-        wait=False)
+        wait=False,
+        templates=IPV6_TEMPLATE,
+        volumes=IPV6_VOLUMES)
 
     job_info = await nomad.get_job('aiocluster-test', 'test-job')
     assert job_info.id == 'test-job'
+
+    assert job_info._raw['TaskGroups'][0]['Tasks'][0]['Config']['volumes'] == IPV6_VOLUMES  # noqa
 
     jobs_info = await nomad.list_jobs('aiocluster-test')
     assert jobs_info.total == 1

@@ -43,7 +43,7 @@ class ClusterManager:
             cpu_limit=None, mem_limit=None,
             envvars={}, volumes=None, volumeMounts=None,
             envFrom=None, entrypoint=None,
-            delete=False, timeout=30, wait=True):
+            delete=False, timeout=30, wait=True, **kw):
         exist = await self.caller.get_job(namespace, name)
         if exist is not None and delete:
             await self.delete_job(namespace, name, wait=True)
@@ -55,7 +55,7 @@ class ClusterManager:
                 command=command, args=args,
                 cpu_limit=cpu_limit, mem_limit=mem_limit,
                 envvars=envvars, volumes=volumes, volumeMounts=volumeMounts,
-                envFrom=envFrom, entrypoint=entrypoint)
+                envFrom=envFrom, entrypoint=entrypoint, **kw)
             if wait:
                 await self.caller.wait_added('job', namespace, name=name,
                                              timeout=timeout)
@@ -179,7 +179,7 @@ class ClusterManager:
             command=None, args=None,
             cpu_limit=None, mem_limit=None,
             envvars={}, workers=1, ps=1, masters=1, tb_gs=None,
-            delete=False):
+            delete=False, **kw):
         exist = await self.caller.get_tfjob(namespace, name)
         if exist is not None and delete:
             await self.delete_tfjob(namespace, name, wait=True)
@@ -190,7 +190,7 @@ class ClusterManager:
                 command=command, args=args,
                 cpu_limit=cpu_limit, mem_limit=mem_limit,
                 envvars=envvars, workers=workers, ps=ps, masters=masters,
-                tb_gs=tb_gs)
+                tb_gs=tb_gs, **kw)
             await self.caller.wait_added('tfjob', namespace, name=name)
             return True
         return False
