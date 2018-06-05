@@ -1,4 +1,4 @@
-0.3.18 (unreleased)
+0.3.18 (2018-06-05)
 -------------------
 
 - Provide keywords on jobs
